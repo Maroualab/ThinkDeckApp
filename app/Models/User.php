@@ -44,4 +44,15 @@ class User extends Authenticatable
         'is_admin' => 'boolean',
         'banned_at' => 'datetime',
     ];
+
+   
+     /**
+     * Get the notes for the user.
+     *
+     */
+    public function notes() 
+    {
+        return $this->hasMany(Note::class);
+    }
+   
 }

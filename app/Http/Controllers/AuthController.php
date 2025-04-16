@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAuthRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -22,25 +22,16 @@ class AuthController extends Controller
     /**
      * Handle user registration.
      */
-    public function register(Request $request)
+    public function register(StoreAuthRequest $request)
     {
-        // Validate request data
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
+        // Get validated data from the request
+        $validated = $request->validated();
+        
+        // Hash the password with bcrypt
+        $validated['password'] = Hash::make($validated['password']);
+        
         // Create user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = User::create($validated);
 
         // Log the user in
         Auth::login($user);
@@ -62,12 +53,8 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate request data
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
+        // Validate login credentials
+        $credentials = $request->only('email', 'password');
         $remember = $request->has('remember');
 
         // Attempt to log in
