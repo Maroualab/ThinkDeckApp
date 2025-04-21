@@ -18,9 +18,11 @@ class NoteController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
-        $notes = Auth::user()->notes()->latest()->get();
+        $notes = Note::paginate(10); // 10 items per page
+        
         return view('notes.index', compact('notes'));
     }
 
@@ -100,6 +102,7 @@ class NoteController extends Controller
             'icon' => $validated['icon'] ?? $note->icon,
         ]);
 
+        // Use flash only once
         return redirect()->route('notes.show', $note)->with('success', 'Note updated successfully!');
     }
 
@@ -115,6 +118,7 @@ class NoteController extends Controller
 
         $note->delete();
 
+        // Use flash only once
         return redirect()->route('notes.index')->with('success', 'Note deleted successfully!');
     }
 }

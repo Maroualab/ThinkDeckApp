@@ -1,0 +1,54 @@
+<aside class="notion-sidebar bg-[#fbfbfa] border-r border-gray-200 min-h-screen flex flex-col transition-all duration-300 fixed h-full z-20" id="sidebar">
+    <div class="p-4 flex items-center justify-between border-b border-gray-200">
+        <a href="{{ route('welcome') }}" class="text-base font-medium text-notion-dark flex items-center hover:text-gray-900">
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            ThinkDeck
+        </a>
+        <button class="text-gray-500 hover:text-gray-700 focus:outline-none" id="toggleSidebar">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="overflow-y-auto flex-1">
+        <div class="py-2 px-2">
+            <!-- Search -->
+            <div class="px-2 mb-4">
+                <div class="bg-gray-100 rounded flex items-center px-3 py-1.5 text-notion">
+                    <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span class="text-sm">Search</span>
+                </div>
+            </div>
+            
+            <!-- Main Navigation -->
+            @include('partials.sidebar-navigation')
+        </div>
+    </div>
+    
+    <!-- User Profile -->
+    <div class="p-3 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600">
+                    {{ substr(Auth::user()->name, 0, 1) }}
+                </div>
+                <span class="text-sm text-notion-dark">{{ Auth::user()->name }}</span>
+            </div>
+            <a href="{{ route('logout') }}" 
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+               class="text-gray-500 hover:text-gray-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+        </div>
+    </div>
+</aside>

@@ -54,5 +54,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Note::class);
     }
+
+    /**
+ * Get the pages for the user.
+ */
+public function pages()
+{
+    return $this->hasMany(Page::class);
+}
    
 }

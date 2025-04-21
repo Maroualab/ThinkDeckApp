@@ -40,4 +40,14 @@ class Note extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get the route to view the note.
+     *
+     * @return string
+     */
+    public function getViewRoute()
+    {
+        return route('notes.show', $this);
+    }
 }

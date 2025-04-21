@@ -1,33 +1,35 @@
 @extends('layouts.dashboard')
 
-@section('title', 'New Note - ThinkDeck')
+@section('title', 'Edit ' . $page->title . ' - ThinkDeck')
 
 @section('topnav-title')
-<h1 class="text-lg font-medium">Create New Note</h1>
+<h1 class="text-lg font-medium">Edit Page</h1>
 @endsection
 
 @section('dashboard-content')
     @include('partials.breadcrumbs', [
-        'resourceType' => 'notes',
-        'current' => 'New Note'
+        'resourceType' => 'pages',
+        'breadcrumbs' => $page->parent ? [$page->parent] : [],
+        'current' => 'Edit "' . $page->title . '"'
     ])
     
     <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <form action="{{ route('notes.store') }}" method="POST">
+        <form action="{{ route('pages.update', $page) }}" method="POST">
             @csrf
+            @method('PUT')
 
             <div class="mb-6">
                 <div class="flex items-center">
                     <div class="mr-2">
                         <button type="button" id="iconSelector" class="text-2xl border border-gray-200 rounded p-1 hover:bg-gray-50">
-                            📝
+                            {{ $page->icon ?? '📄' }}
                         </button>
-                        <input type="hidden" name="icon" id="selectedIcon" value="📝">
+                        <input type="hidden" name="icon" id="selectedIcon" value="{{ $page->icon ?? '📄' }}">
                     </div>
                     <div class="flex-1">
-                        <input type="text" name="title" id="title" placeholder="Note title" 
+                        <input type="text" name="title" id="title" placeholder="Page title" 
                                class="w-full border-0 border-b border-transparent text-2xl font-bold focus:ring-0 focus:border-gray-300" 
-                               value="{{ old('title') }}" required autofocus>
+                               value="{{ old('title', $page->title) }}" required autofocus>
                     </div>
                 </div>
             </div>
@@ -36,15 +38,29 @@
                 <label for="content" class="block text-sm font-medium text-gray-700 mb-1 sr-only">Content</label>
                 <textarea name="content" id="content" rows="12" 
                     class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4"
-                    placeholder="Start writing...">{{ old('content') }}</textarea>
+                    placeholder="Start writing...">{{ old('content', $page->content) }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">Parent Page (optional)</label>
+                <select name="parent_id" id="parent_id" class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">No parent (top-level page)</option>
+                    @foreach($availablePages as $availablePage)
+                        @if($availablePage->id !== $page->id && !$page->descendants->contains($availablePage))
+                            <option value="{{ $availablePage->id }}" {{ old('parent_id', $page->parent_id) == $availablePage->id ? 'selected' : '' }}>
+                                {{ $availablePage->title }}
+                            </option>
+                        @endif
+                    @endforeach
+                </select>
             </div>
 
             <div class="flex justify-end space-x-2">
-                <a href="{{ route('notes.index') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm font-medium transition-all">
+                <a href="{{ route('pages.show', $page) }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm font-medium transition-all">
                     Cancel
                 </a>
                 <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium transition-all">
-                    Create Note
+                    Save Changes
                 </button>
             </div>
         </form>
@@ -57,8 +73,8 @@
         const iconSelector = document.getElementById('iconSelector');
         const selectedIcon = document.getElementById('selectedIcon');
         
-        // Common note icons
-        const icons = ['📝', '📓', '📔', '📕', '📖', '📗', '📘', '📙', '📚', '📒', '🗒️', '🔖', '📑', '🗞️', '📰', '🏷️', '✏️', '✒️', '🖋️', '📌', '📍', '📎', '🖇️', '📐', '📏', '✂️', '💼', '💡', '🔍', '🔎', '🔦', '🧮', '🧾', '📬', '📭', '📮', '🗿', '🔔', '🔕', '📢', '📣', '🔊', '🔉', '🔇', '🔈', '📯', '🔄', '♻️', '🔃', '🕓', '⏱️', '⏲️', '⏰', '🕰️', '🗓️', '📅', '📆', '⌚', '📱', '💻', '⌨️', '💾', '📧', '📧', '📨', '📩', '📤', '📥', '📦', '🤔', '🧐', '🤦', '🤷', '🙋', '💭', '💬', '🗯️', '❓', '❔', '❗', '❕', '❣️', '💯', '💢', '🔥', '⭐', '🌟', '✨', '💫', '🚩', '🎯', '💘', '💝', '💖', '💗', '💓', '💞', '💕', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍'];
+        // Common page icons
+        const icons = ['📄', '📝', '📌', '📎', '📊', '📈', '📉', '📑', '📋', '📃', '📜', '📚', '📔', '📕', '📖', '📗', '📘', '📙', '🗒️', '🗓️', '📆', '📅', '🗃️', '🗄️', '🗂️', '📁', '📂', '🗞️', '📰', '🏷️', '📮', '📭', '✅', '☑️', '✔️', '⚠️', '💡', '❓', '❗', '📣', '🔈', '📢', '🔔', '🔖', '💯', '💰', '💴', '💵', '💶', '💷', '📧', '✉️', '📨', '📩', '📤', '📥', '📦', '📪', '📫', '📬', '🏠', '🏡', '🏢', '🏣', '🏤', '🏥', '🏦', '🏨', '🏩', '🏪', '🏫', '🏬', '🏭', '🏯', '🏰', '💻', '🖥️', '🖨️', '⌨️', '🖱️', '🔋', '🔌', '💾', '💿', '📀', '🎮', '📱', '☎️', '📞', '📟', '📠', '🏁', '🚩', '🎯', '🎪', '🎭', '🎨', '🎬', '🎤', '🎧', '🎼', '🎹', '🥁', '🎷', '🎺', '🎸', '🎻', '🎲', '🎯', '🎳', '🎮', '🎰', '🛒', '🎁', '🎈', '🎉', '🎊', '🎂', '🎀', '🎏', '🎇', '🌈', '❤️', '💜', '💙', '💚', '💛', '🧡', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '🔥', '⭐', '🌟', '✨', '⚡', '🌍', '🌎', '🌏', '🌑', '🌒', '🌗', '🌖', '🌕', '🌝', '🌛', '🌜', '🌞', '⛅', '⚡', '🌈', '🌂', '☔', '⛄', '❄️', '🔥', '💧', '🌊', '🍇', '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', '🥭', '🍎', '🍐', '🍑', '🍒', '🍓', '🥝', '🍅', '🥥', '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🥒', '🥬', '🥦', '🍄', '🥜', '🌰', '🍞', '🥐', '🥖', '🥨', '🥯', '🥞', '🧀', '🍖', '🍗', '🥩', '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🥙', '🥚', '🧂', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼', '☕', '🍵', '🍶', '🍾', '🍷', '🍸', '🍹', '🍺', '🍻', '🥃', '🥤', '🥢', '🍽️', '🍴', '🥄'];
         
         // Create the icon picker popup
         const popup = document.createElement('div');
