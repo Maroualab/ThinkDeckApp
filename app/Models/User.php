@@ -56,11 +56,26 @@ class User extends Authenticatable
     }
 
     /**
- * Get the pages for the user.
- */
-public function pages()
-{
-    return $this->hasMany(Page::class);
-}
-   
+     * Get the pages for the user.
+     */
+    public function pages()
+    {
+        return $this->hasMany(Page::class);
+    }
+
+    /**
+     * Get the tasks for the user.
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get the workspaces for the user.
+     */
+    public function workspaces()
+    {
+        return $this->hasMany(Workspace::class);
+    }
 }

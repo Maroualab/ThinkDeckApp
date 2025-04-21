@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::post('/tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
+    Route::post('/tasks/{task}/toggle', [App\Http\Controllers\TaskController::class, 'toggleStatus'])->name('tasks.toggle');
 
     // Note routes
     Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');

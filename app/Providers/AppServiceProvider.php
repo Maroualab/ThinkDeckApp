@@ -21,7 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('layouts.dashboard', function ($view) {
+        // Create a reusable function for getting sidebar data
+        $getSidebarData = function() {
             if (Auth::check()) {
                 $user = Auth::user();
                 
@@ -46,8 +47,29 @@ class AppServiceProvider extends ServiceProvider
                     ->sortByDesc('updated_at')
                     ->take(5);
                 
-                $view->with(compact('recentPages', 'recentNotes', 'recentItems'));
+                return compact('recentPages', 'recentNotes', 'recentItems');
             }
+            
+            return [
+                'recentPages' => collect(),
+                'recentNotes' => collect(),
+                'recentItems' => collect(),
+            ];
+        };
+
+        // Share data with dashboard layout
+        View::composer('layouts.dashboard', function ($view) use ($getSidebarData) {
+            $view->with($getSidebarData());
+        });
+        
+        // Also share data with the sidebar navigation partial
+        View::composer('partials.sidebar-navigation', function ($view) use ($getSidebarData) {
+            $view->with($getSidebarData());
+        });
+        
+        // Also share with the dashboard view
+        View::composer('dashboard', function ($view) use ($getSidebarData) {
+            $view->with($getSidebarData());
         });
     }
 }

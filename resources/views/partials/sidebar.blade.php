@@ -52,3 +52,24 @@
         </div>
     </div>
 </aside>
+<script>
+// Dropdown toggles
+const pagesDropdownBtn = document.getElementById('pagesDropdownBtn');
+        const pagesDropdownContent = document.getElementById('pagesDropdownContent');
+        const pagesDropdownIcon = document.getElementById('pagesDropdownIcon');
+        
+        const notesDropdownBtn = document.getElementById('notesDropdownBtn');
+        const notesDropdownContent = document.getElementById('notesDropdownContent');
+        const notesDropdownIcon = document.getElementById('notesDropdownIcon');
+
+        pagesDropdownBtn?.addEventListener('click', function() {
+            pagesDropdownContent.classList.toggle('hidden');
+            pagesDropdownIcon.classList.toggle('rotate-180');
+        });
+
+        notesDropdownBtn?.addEventListener('click', function() {
+            notesDropdownContent.classList.toggle('hidden');
+            notesDropdownIcon.classList.toggle('rotate-180');
+        });
+    
+</script>

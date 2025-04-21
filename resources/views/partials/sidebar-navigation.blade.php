@@ -18,7 +18,7 @@
         <div id="pagesDropdownContent" class="ml-6 mt-1 space-y-1 hidden">
             <a href="{{ route('pages.index') }}" class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all {{ request()->routeIs('pages.index') ? 'bg-gray-100' : '' }}">
                 <span class="page-icon mr-2">📋</span>
-                All Pages
+                All 
             </a>
             @if(isset($recentPages) && count($recentPages) > 0)
                 @foreach($recentPages as $recentPage)
@@ -45,7 +45,7 @@
         <div id="notesDropdownContent" class="ml-6 mt-1 space-y-1 hidden">
             <a href="{{ route('notes.index') }}" class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all {{ request()->routeIs('notes.index') ? 'bg-gray-100' : '' }}">
                 <span class="page-icon mr-2">📋</span>
-                All Notes
+                All 
             </a>
             @if(isset($recentNotes) && count($recentNotes) > 0)
                 @foreach($recentNotes as $recentNote)
@@ -58,11 +58,6 @@
         </div>
     </div>
     
-    <!-- Future feature: Tasks -->
-    <a href="#" class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all">
-        <span class="page-icon mr-2">✅</span>
-        Tasks
-    </a>
 </div>
 
 <!-- Workspaces Section -->
