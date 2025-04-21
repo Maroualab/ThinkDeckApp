@@ -9,14 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('workspaces', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('icon')->nullable();
+            $table->string('icon')->default('👤');
             $table->text('description')->nullable();
+            $table->string('color')->nullable();
             $table->boolean('is_default')->default(false);
             $table->timestamps();
         });

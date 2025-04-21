@@ -26,49 +26,60 @@ class AppServiceProvider extends ServiceProvider
             if (Auth::check()) {
                 $user = Auth::user();
                 
-                // Get recent pages
-                $recentPages = $user->pages()
-                    ->latest()
-                    ->take(3)
-                    ->get();
+                // Get workspaces
+                $workspaces = $user->workspaces()->get();
                 
-                // Get recent notes
-                $recentNotes = $user->notes()
-                    ->latest()
-                    ->take(3)
-                    ->get();
+                // Get active workspace (from session or default)
+                $activeWorkspaceId = session('active_workspace_id');
+                $activeWorkspace = null;
                 
+                if ($activeWorkspaceId) {
+                    $activeWorkspace = $workspaces->where('id', $activeWorkspaceId)->first();
+                }
+                
+                // If no active workspace is found, use the default
+                if (!$activeWorkspace) {
+                    $activeWorkspace = $workspaces->where('is_default', true)->first();
+                    
+                    // If no default workspace, use the first one
+                    if (!$activeWorkspace && $workspaces->count() > 0) {
+                        $activeWorkspace = $workspaces->first();
+                    }
+                    
+                    // Store in session if found
+                    if ($activeWorkspace) {
+                        session(['active_workspace_id' => $activeWorkspace->id]);
+                    }
+                }
+                
+                // Get recent pages and notes for the sidebar
+                $recentPages = $activeWorkspace 
+                    ? $activeWorkspace->pages()->latest()->take(3)->get()
+                    : $user->pages()->latest()->take(3)->get();
+                    
+                $recentNotes = $activeWorkspace
+                    ? $activeWorkspace->notes()->latest()->take(3)->get()
+                    : $user->notes()->latest()->take(3)->get();
+                    
                 // Get combined recent items for dashboard
-                $recentItems = $user->pages()
-                    ->latest()
-                    ->take(5)
-                    ->get()
-                    ->merge($user->notes()->latest()->take(5)->get())
+                $recentItems = $recentPages->merge($recentNotes)
                     ->sortByDesc('updated_at')
                     ->take(5);
                 
-                return compact('recentPages', 'recentNotes', 'recentItems');
+                return compact('workspaces', 'activeWorkspace', 'recentPages', 'recentNotes', 'recentItems');
             }
             
             return [
+                'workspaces' => collect(),
+                'activeWorkspace' => null,
                 'recentPages' => collect(),
                 'recentNotes' => collect(),
                 'recentItems' => collect(),
             ];
         };
 
-        // Share data with dashboard layout
-        View::composer('layouts.dashboard', function ($view) use ($getSidebarData) {
-            $view->with($getSidebarData());
-        });
-        
-        // Also share data with the sidebar navigation partial
-        View::composer('partials.sidebar-navigation', function ($view) use ($getSidebarData) {
-            $view->with($getSidebarData());
-        });
-        
-        // Also share with the dashboard view
-        View::composer('dashboard', function ($view) use ($getSidebarData) {
+        // Share data with views
+        View::composer(['layouts.dashboard', 'partials.sidebar-navigation', 'dashboard'], function ($view) use ($getSidebarData) {
             $view->with($getSidebarData());
         });
     }

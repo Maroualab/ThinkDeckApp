@@ -64,6 +64,14 @@ class Page extends Model
     }
 
     /**
+     * Get the workspace that owns the page.
+     */
+    public function workspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class);
+    }
+
+    /**
      * Scope a query to only include non-archived pages.
      */
     public function scopeActive($query)

@@ -35,9 +35,10 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600">
-                    {{ substr(Auth::user()->name, 0, 1) }}
+                {{ Auth::check() ? substr(Auth::user()->name, 0, 1) : '?' }}
                 </div>
-                <span class="text-sm text-notion-dark">{{ Auth::user()->name }}</span>
+                <span class="text-sm text-notion-dark">{{ Auth::check() ? substr(Auth::user()->name, 0, 1) : '?' }}
+                </span>
             </div>
             <a href="{{ route('logout') }}" 
                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"

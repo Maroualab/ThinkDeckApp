@@ -18,6 +18,7 @@ class Workspace extends Model
         'name',
         'icon',
         'description',
+        'color',
         'is_default',
         'user_id'
     ];

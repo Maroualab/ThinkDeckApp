@@ -29,17 +29,16 @@ class PageController extends Controller
      */
     public function create(Request $request)
     {
-        $parentId = $request->query('parent_id');
-        $parent = null;
+        // Get workspace_id from request if provided
+        $workspaceId = $request->workspace_id;
+        $workspace = null;
         
-        if ($parentId) {
-            $parent = Auth::user()->pages()->findOrFail($parentId);
+        // If workspace_id is provided, validate it belongs to the user
+        if ($workspaceId) {
+            $workspace = Auth::user()->workspaces()->find($workspaceId);
         }
-         // Fetch available pages for the dropdown
-    $availablePages = Page::all(); // Adjust the query as needed
-
         
-        return view('pages.create', compact('parent','availablePages'));
+        return view('pages.create', compact('workspace'));
     }
 
     /**
@@ -53,7 +52,13 @@ class PageController extends Controller
             'icon' => 'nullable|string|max:10',
             'parent_id' => 'nullable|exists:pages,id',
             'is_template' => 'boolean',
+            'workspace_id' => 'nullable|exists:workspaces,id',
         ]);
+
+        // If no workspace_id is specified, use the active workspace from session
+        if (!isset($validated['workspace_id']) && session('active_workspace_id')) {
+            $validated['workspace_id'] = session('active_workspace_id');
+        }
 
         // Get highest position value for siblings
         $position = 0;
@@ -76,6 +81,7 @@ class PageController extends Controller
             'parent_id' => isset($validated['parent_id']) ? $validated['parent_id'] : null,
             'position' => $position,
             'is_template' => isset($validated['is_template']) ? $validated['is_template'] : false,
+            'workspace_id' => $validated['workspace_id'] ?? null,
         ]);
 
          // Change the redirect to go back to the index page instead of the show page

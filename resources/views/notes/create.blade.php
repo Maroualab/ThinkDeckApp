@@ -32,6 +32,17 @@
                 </div>
             </div>
 
+            <div class="mb-4">
+                <label for="workspace_id" class="block text-sm font-medium text-gray-700 mb-1">Workspace</label>
+                <select name="workspace_id" id="workspace_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    @foreach(Auth::user()->workspaces as $workspace)
+                        <option value="{{ $workspace->id }}" {{ (session('active_workspace_id') == $workspace->id) ? 'selected' : '' }}>
+                            {{ $workspace->icon }} {{ $workspace->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="mb-6">
                 <label for="content" class="block text-sm font-medium text-gray-700 mb-1 sr-only">Content</label>
                 <textarea name="content" id="content" rows="12" 

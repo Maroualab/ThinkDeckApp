@@ -29,9 +29,18 @@ class NoteController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('notes.create');
+        // Get workspace_id from request if provided
+        $workspaceId = $request->workspace_id;
+        $workspace = null;
+        
+        // If workspace_id is provided, validate it belongs to the user
+        if ($workspaceId) {
+            $workspace = Auth::user()->workspaces()->find($workspaceId);
+        }
+        
+        return view('notes.create', compact('workspace'));
     }
 
     /**
@@ -43,12 +52,19 @@ class NoteController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'icon' => 'nullable|string|max:10',
+            'workspace_id' => 'nullable|exists:workspaces,id',
         ]);
+
+        // If no workspace_id is specified, use the active workspace from session
+        if (!isset($validated['workspace_id']) && session('active_workspace_id')) {
+            $validated['workspace_id'] = session('active_workspace_id');
+        }
 
         $note = Auth::user()->notes()->create([
             'title' => $validated['title'],
             'content' => $validated['content'] ?? null,
             'icon' => $validated['icon'] ?? '📝',
+            'workspace_id' => $validated['workspace_id'],
         ]);
 
         return redirect()->route('notes.show', $note)->with('success', 'Note created successfully!');
@@ -94,12 +110,19 @@ class NoteController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'icon' => 'nullable|string|max:10',
+            'workspace_id' => 'nullable|exists:workspaces,id',
         ]);
+
+        // If no workspace_id is specified, use the active workspace from session
+        if (!isset($validated['workspace_id']) && session('active_workspace_id')) {
+            $validated['workspace_id'] = session('active_workspace_id');
+        }
 
         $note->update([
             'title' => $validated['title'],
             'content' => $validated['content'] ?? null,
             'icon' => $validated['icon'] ?? $note->icon,
+            'workspace_id' => $validated['workspace_id'],
         ]);
 
         // Use flash only once

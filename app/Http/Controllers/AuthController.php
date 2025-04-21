@@ -33,6 +33,14 @@ class AuthController extends Controller
         // Create user
         $user = User::create($validated);
 
+        // Create default workspace for new user
+        $user->workspaces()->create([
+            'name' => 'Personal',
+            'icon' => '👤',
+            'description' => 'Your default workspace',
+            'is_default' => true,
+        ]);
+
         // Log the user in
         Auth::login($user);
 

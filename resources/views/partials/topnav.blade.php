@@ -19,7 +19,7 @@
         <div class="relative">
             <button id="profileButton" class="flex items-center space-x-2 rounded p-1 hover:bg-gray-100 focus:outline-none transition-all">
                 <div class="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600">
-                    {{ substr(Auth::user()->name, 0, 1) }}
+                    {{ Auth::check() ? substr(Auth::user()->name, 0, 1) : '?' }}
                 </div>
             </button>
             
