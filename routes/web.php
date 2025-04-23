@@ -5,6 +5,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -77,6 +78,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/workspaces/{workspace}', [WorkspaceController::class, 'update'])->name('workspaces.update');
     Route::delete('/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
     Route::get('/workspaces/{workspace}/switch', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
+
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Logout route
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

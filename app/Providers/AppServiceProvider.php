@@ -21,65 +21,39 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Create a reusable function for getting sidebar data
-        $getSidebarData = function() {
+
+        $getSidebarData = function () {
             if (Auth::check()) {
                 $user = Auth::user();
-                
-                // Get workspaces
                 $workspaces = $user->workspaces()->get();
-                
-                // Get active workspace (from session or default)
-                $activeWorkspaceId = session('active_workspace_id');
-                $activeWorkspace = null;
-                
-                if ($activeWorkspaceId) {
-                    $activeWorkspace = $workspaces->where('id', $activeWorkspaceId)->first();
+
+                // Fallback to first workspace if none is active
+                $activeWorkspace = $workspaces->firstWhere('id', session('active_workspace_id'))
+                    ?? $workspaces->where('is_default', true)->first()
+                    ?? $workspaces->first();
+
+                // Always ensure an active workspace is set
+                if ($activeWorkspace && !session('active_workspace_id')) {
+                    session(['active_workspace_id' => $activeWorkspace->id]);
                 }
-                
-                // If no active workspace is found, use the default
-                if (!$activeWorkspace) {
-                    $activeWorkspace = $workspaces->where('is_default', true)->first();
-                    
-                    // If no default workspace, use the first one
-                    if (!$activeWorkspace && $workspaces->count() > 0) {
-                        $activeWorkspace = $workspaces->first();
-                    }
-                    
-                    // Store in session if found
-                    if ($activeWorkspace) {
-                        session(['active_workspace_id' => $activeWorkspace->id]);
-                    }
-                }
-                
-                // Get recent pages and notes for the sidebar
-                $recentPages = $activeWorkspace 
-                    ? $activeWorkspace->pages()->latest()->take(3)->get()
-                    : $user->pages()->latest()->take(3)->get();
-                    
+
+                // Get recent items FROM ACTIVE WORKSPACE ONLY
+                $recentPages = $activeWorkspace
+                    ? $activeWorkspace->pages()->latest('updated_at')->take(5)->get()
+                    : collect();
+
                 $recentNotes = $activeWorkspace
-                    ? $activeWorkspace->notes()->latest()->take(3)->get()
-                    : $user->notes()->latest()->take(3)->get();
-                    
-                // Get combined recent items for dashboard
-                $recentItems = $recentPages->merge($recentNotes)
-                    ->sortByDesc('updated_at')
-                    ->take(5);
-                
-                return compact('workspaces', 'activeWorkspace', 'recentPages', 'recentNotes', 'recentItems');
+                    ? $activeWorkspace->notes()->latest('updated_at')->take(5)->get()
+                    : collect();
+
+                return compact('workspaces', 'activeWorkspace', 'recentPages', 'recentNotes');
             }
-            
-            return [
-                'workspaces' => collect(),
-                'activeWorkspace' => null,
-                'recentPages' => collect(),
-                'recentNotes' => collect(),
-                'recentItems' => collect(),
-            ];
+
+            return ['workspaces' => collect(), 'activeWorkspace' => null, 'recentPages' => collect(), 'recentNotes' => collect()];
         };
 
         // Share data with views
-        View::composer(['layouts.dashboard', 'partials.sidebar-navigation', 'dashboard'], function ($view) use ($getSidebarData) {
+        View::composer(['layouts.dashboard', 'partials.sidebar', 'partials.sidebar-navigation', 'dashboard'], function ($view) use ($getSidebarData) {
             $view->with($getSidebarData());
         });
     }

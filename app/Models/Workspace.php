@@ -43,16 +43,14 @@ class Workspace extends Model
     /**
      * Get the pages in this workspace.
      */
-    public function pages()
-    {
+    public function pages() {
         return $this->hasMany(Page::class);
     }
 
     /**
      * Get the notes in this workspace.
      */
-    public function notes()
-    {
+    public function notes() {
         return $this->hasMany(Note::class);
     }
 }

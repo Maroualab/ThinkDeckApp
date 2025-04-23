@@ -74,8 +74,8 @@ class User extends Authenticatable
     /**
      * Get the workspaces for the user.
      */
-    public function workspaces()
-    {
-        return $this->hasMany(Workspace::class);
+    public function workspaces() {
+        return $this->hasMany(Workspace::class); // or belongsToMany
     }
+    
 }
