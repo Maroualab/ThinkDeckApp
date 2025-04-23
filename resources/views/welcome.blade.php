@@ -81,11 +81,17 @@
                 @if (Route::has('login'))
                     <div class="flex space-x-4">
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Dashboard</a>
+                            <a href="{{ url('/dashboard') }}" class="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                Dashboard
+                            </a>
                         @else
-                            <a href="{{ route('login') }}" class="nav-link text-gray-700 hover:text-indigo-600 transition-colors">Log in</a>
+                            <a href="{{ route('login') }}" class="px-6 py-2 rounded-full bg-white border border-indigo-600 text-indigo-600 font-medium hover:bg-indigo-50 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                Log in
+                            </a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:opacity-90 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Register</a>
+                                <a href="{{ route('register') }}" class="px-6 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:opacity-90 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                    Register
+                                </a>
                             @endif
                         @endauth
                     </div>

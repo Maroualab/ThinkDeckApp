@@ -57,6 +57,7 @@
         }
         @yield('additional-styles')
     </style>
+    @include('sweetalert2::index')
 </head>
 <body class="bg-white text-gray-900 min-h-screen">
     @yield('content')

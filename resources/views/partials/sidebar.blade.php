@@ -62,7 +62,7 @@
             <!-- Profile Dropdown -->
             <div id="profileMenuDropdown"
                 style="top: -70px;" class="hidden absolute right-0 top-[-70px] w-48 bg-white border border-gray-200 rounded shadow-lg z-20 transition-all duration-200 ease-out">
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Profile
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="border-t border-gray-200">
