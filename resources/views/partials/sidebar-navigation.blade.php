@@ -70,47 +70,28 @@
 </div>
 
 <!-- Workspaces Section -->
-<div class="mt-6 px-1.5">
+<div class="mt-6 px-1.5 relative">
     <div class="flex items-center justify-between text-xs text-notion mb-2 px-2">
         <div class="flex items-center">
-            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                </path>
-            </svg>
-            WORKSPACES
+            <span>Workspaces</span>
+            <span class="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px]">Coming Soon</span>
         </div>
-        <a href="{{ route('workspaces.create') }}" class="text-notion hover:text-gray-800 transition-colors">
+        <span class="text-notion hover:text-gray-800 transition-colors cursor-not-allowed opacity-50">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-        </a>
+        </span>
     </div>
-    <a href="{{ route('workspaces.index') }}"
-        class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all {{ request()->routeIs('workspaces.index') ? 'bg-gray-100' : '' }}">
-        <span class="page-icon mr-2">📋</span>
-        All
-    </a>
-    <div class="space-y-1">
-        @forelse($workspaces ?? [] as $workspace)
-            <a href="{{ route('workspaces.switch', $workspace) }}"
-                class="flex items-center px-2 py-1 text-sm text-notion rounded-md notion-hover transition-all {{ isset($activeWorkspace) && $activeWorkspace->id === $workspace->id ? 'bg-gray-100' : '' }}">
-                @if(is_object($workspace))
-                    <span class="page-icon mr-2">{{ $workspace->icon ?? '👤' }}</span>
-                    {{ $workspace->name }}
-                    @if($workspace->is_default)
-                @endif
-                    <span class="ml-1 text-xs text-gray-400">(default)</span>
-                @endif
-            </a>
-        @empty
-            <a href="{{ route('workspaces.create') }}"
-                class="flex items-center px-2 py-1 text-sm text-notion rounded-md notion-hover transition-all">
-                <span class="page-icon mr-2">➕</span>
-                Create workspace
-            </a>
-        @endforelse
+    
+    <!-- Default workspace (non-clickable) -->
+    <div class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all bg-gray-100">
+        <span class="page-icon mr-2">👤</span>
+        Personal
+    </div>
+    
+    <!-- Disabled workspace features info -->
+    <div class="mt-2 text-xs text-gray-500 px-2">
+        <p>Multiple workspaces will be available soon. Stay tuned!</p>
     </div>
 </div>
 <!-- Quick Create -->

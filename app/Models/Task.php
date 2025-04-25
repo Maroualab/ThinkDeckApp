@@ -9,44 +9,18 @@ class Task extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
-        'description',
         'completed',
         'due_date',
-        'priority',
-        'user_id',
-        'page_id'
+        'user_id', // Ensure this is set up for user ownership
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'completed' => 'boolean',
-        'due_date' => 'datetime',
-    ];
-
-    /**
-     * Get the user that owns the task.
+     * Define the relationship to the user.
      */
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the page that this task belongs to.
-     */
-    public function page()
-    {
-        return $this->belongsTo(Page::class);
     }
 }

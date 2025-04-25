@@ -18,8 +18,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('completed')->default(false);
             $table->timestamp('due_date')->nullable();
-            $table->integer('priority')->default(0);
-            $table->foreignId('page_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

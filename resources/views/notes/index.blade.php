@@ -7,7 +7,7 @@
 @endsection
 
 @section('dashboard-content')
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mt-8">
         <h1 class="text-2xl font-bold">All Notes</h1>
         <a href="{{ route('notes.create') }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition-all">
             New Note
@@ -24,26 +24,23 @@
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @foreach($notes as $note)
-                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                    <div class="flex items-center mb-3">
-                        <span class="text-2xl mr-2">{{ $note->icon ?? '📝' }}</span>
-                        <h3 class="text-lg font-medium">
-                            <a href="{{ route('notes.show', $note) }}" class="hover:text-indigo-600 transition-colors">
-                                {{ $note->title }}
-                            </a>
+                <a href="{{ route('notes.show', $note) }}" class="block border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors group">
+                    <div class="flex items-center mb-2">
+                        <span class="text-xl mr-2">{{ $note->icon ?? '📝' }}</span>
+                        <h3 class="text-md font-medium text-gray-800 group-hover:text-indigo-600 transition-colors truncate">
+                            {{ $note->title }}
                         </h3>
                     </div>
-                    <div class="text-sm text-notion mb-4 line-clamp-2">
-                        {{ Str::limit(strip_tags($note->content), 120) }}
-                    </div>
+                    {{-- Optional: Add a short preview if desired --}}
+                    <p class="text-sm text-notion mb-3 line-clamp-2">{{ Str::limit(strip_tags($note->content), 100) }}</p> 
                     <div class="flex justify-between items-center text-xs text-notion">
-                        <span>{{ $note->updated_at->format('M d, Y') }}</span>
+                        <span>Updated: {{ $note->updated_at->diffForHumans() }}</span>
+                        {{-- Actions can be added here or kept minimal for index view --}}
                         <div class="flex space-x-2">
-                            <a href="{{ route('notes.edit', $note) }}" class="hover:text-gray-900 transition-colors">Edit</a>
-                            <a href="{{ route('notes.show', $note) }}" class="hover:text-gray-900 transition-colors">View</a>
-                        </div>
+                            <span class="hover:text-gray-900 transition-colors">Edit</span>
+                        </div> 
                     </div>
-                </div>
+                </a>
             @endforeach
         </div>
         

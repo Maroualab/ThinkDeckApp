@@ -17,14 +17,12 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
-            'page_id' => 'nullable|exists:pages,id',
         ]);
 
         $task = Auth::user()->tasks()->create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'due_date' => $validated['due_date'] ?? null,
-            'page_id' => $validated['page_id'] ?? null,
         ]);
 
         return response()->json([
@@ -46,5 +44,19 @@ class TaskController extends Controller
             'success' => true,
             'task' => $task
         ]);
+    }
+
+ 
+    public function destroy(Task $task)
+    {
+        // Ensure the authenticated user owns the task
+        if ($task->user_id !== auth()->id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Delete the task
+        $task->delete();
+
+        return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
     }
 }

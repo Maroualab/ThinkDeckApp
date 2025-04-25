@@ -10,16 +10,10 @@
 @endsection
 
 @section('dashboard-content')
-    <div class="space-y-6">
+    <div class="space-y-6 mt-10">
         <!-- Page header section -->
-        <div class="flex justify-between items-center">
-            <div>
-                @include('partials.breadcrumbs', [
-                    'resourceType' => 'pages',
-                    'current' => $page->title
-                ])
-            </div>
-            <div class="flex space-x-3">
+
+            <div class="flex space-x-3 mt-8">
                 <a href="{{ route('pages.edit', $page) }}" class="inline-flex items-center px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-sm font-medium transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-10 10a2 2 0 01-1.414.586H4a1 1 0 01-1-1v-1a2 2 0 01.586-1.414l10-10z" />
@@ -38,14 +32,14 @@
                     </button>
                 </form>
             </div>
-        </div>
-
+            
+        
         <!-- Page content -->
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
-            <div class="p-6">
-                <div class="prose max-w-none">
-                    {!! $page->parsed_content !!}
-                </div>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="border-l-4 border-blue-500 px-6 py-8">
+            <div class="prose prose-blue prose-lg max-w-none">
+                {{ $page->content }} 
+            </div>
             </div>
         </div>
         

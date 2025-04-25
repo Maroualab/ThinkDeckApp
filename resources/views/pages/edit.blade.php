@@ -41,19 +41,7 @@
                     placeholder="Start writing...">{{ old('content', $page->content) }}</textarea>
             </div>
 
-            <div class="mb-4">
-                <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">Parent Page (optional)</label>
-                <select name="parent_id" id="parent_id" class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">No parent (top-level page)</option>
-                    @foreach($availablePages as $availablePage)
-                        @if($availablePage->id !== $page->id && !$page->descendants->contains($availablePage))
-                            <option value="{{ $availablePage->id }}" {{ old('parent_id', $page->parent_id) == $availablePage->id ? 'selected' : '' }}>
-                                {{ $availablePage->title }}
-                            </option>
-                        @endif
-                    @endforeach
-                </select>
-            </div>
+            
 
             <div class="flex justify-end space-x-2">
                 <a href="{{ route('pages.show', $page) }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm font-medium transition-all">

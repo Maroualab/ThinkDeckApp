@@ -64,27 +64,3 @@
     </div>
 </header>
 
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const importButton = document.getElementById('importButton');
-        const importModal = document.getElementById('importModal');
-        const closeImportModal = document.getElementById('closeImportModal');
-        
-        importButton?.addEventListener('click', function() {
-            importModal.classList.remove('hidden');
-        });
-        
-        closeImportModal?.addEventListener('click', function() {
-            importModal.classList.add('hidden');
-        });
-        
-        // Close modal when clicking outside
-        importModal?.addEventListener('click', function(e) {
-            if (e.target === importModal) {
-                importModal.classList.add('hidden');
-            }
-        });
-    });
-</script>
-@endpush

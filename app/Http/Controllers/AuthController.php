@@ -24,27 +24,20 @@ class AuthController extends Controller
      */
     public function register(StoreAuthRequest $request)
     {
-        // Get validated data from the request
+        // Get validated data
         $validated = $request->validated();
         
-        // Hash the password with bcrypt
-        $validated['password'] = Hash::make($validated['password']);
-        
-        // Create user
-        $user = User::create($validated);
-
-        // Create default workspace for new user
-        $user->workspaces()->create([
-            'name' => 'Personal',
-            'icon' => '👤',
-            'description' => 'Your default workspace',
-            'is_default' => true,
+        // Create the user
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
-
+        
         // Log the user in
         Auth::login($user);
-
-        // Redirect to dashboard or home
+        
+        // Redirect to dashboard
         return redirect()->intended('/dashboard');
     }
 
@@ -94,8 +87,8 @@ class AuthController extends Controller
     /**
      * Show the password reset request form.
      */
-    public function showPasswordRequestForm()
-    {
-        return view('auth.forgot-password');
-    }
+    // public function showPasswordRequestForm()
+    // {
+    //     return view('auth.forgot-password');
+    // }
 }

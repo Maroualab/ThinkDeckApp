@@ -11,18 +11,15 @@ return new class extends Migration
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('parent_id')->nullable()->references('id')->on('pages')->onDelete('cascade');
             $table->string('title');
             $table->longText('content')->nullable();
-            $table->string('icon')->default('📄');
-            $table->integer('position')->default(0); // For ordering pages
+            $table->string('icon');
             $table->boolean('is_favorite')->default(false);
             $table->boolean('is_template')->default(false);
             $table->boolean('is_archived')->default(false);
             $table->timestamps();
             
-            // Index for faster lookup
-            $table->index(['user_id', 'parent_id', 'is_archived']);
+            $table->index(['user_id','is_archived']);
         });
     }
 

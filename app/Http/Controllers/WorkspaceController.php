@@ -66,6 +66,7 @@ class WorkspaceController extends Controller
         $this->authorize('view', $workspace);
         
         $pages = $workspace->pages()->latest()->paginate(10);
+        
         $notes = $workspace->notes()->latest()->paginate(10);
         
         return view('workspaces.show', compact('workspace', 'pages', 'notes'));
