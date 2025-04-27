@@ -17,9 +17,10 @@ class Workspace extends Model
     protected $fillable = [
         'name',
         'icon',
+        'owner_id',
         'description',
         'color',
-        'is_default',
+        'workspace_ref',
         'user_id'
     ];
 
@@ -35,9 +36,9 @@ class Workspace extends Model
     /**
      * Get the user that owns the workspace.
      */
-    public function user()
+    public function owner()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'owner_id');
     }
 
     /**
@@ -47,10 +48,7 @@ class Workspace extends Model
         return $this->hasMany(Page::class);
     }
 
-    /**
-     * Get the notes in this workspace.
-     */
-    public function notes() {
-        return $this->hasMany(Note::class);
-    }
+    public function users(){
+        return $this->belongsToMany(User::class,'user_workspaces');
+    } 
 }

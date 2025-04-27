@@ -1,3 +1,9 @@
+<?php
+$recentPages = auth()->user()->pages()->orderBy('created_at', 'DESC')->paginate(3);
+$recentNotes = auth()->user()->notes()->orderBy('created_at', 'DESC')->paginate(3);
+$OwnedWorkspaces = auth()->user()->workspaceOwner()->orderBy('created_at', 'DESC')->paginate(3);
+$ContributeWorkspaces = auth()->user()->workspaces;
+?>
 <div class="space-y-1 px-1.5 py-2">
     <a href="{{ route('dashboard') }}"
         class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all {{ request()->routeIs('dashboard') ? 'bg-gray-100' : '' }}">
@@ -24,6 +30,7 @@
                 <span class="page-icon mr-2">📋</span>
                 All
             </a>
+
             @if(isset($recentPages) && count($recentPages) > 0)
                 @foreach($recentPages as $recentPage)
                     <a href="{{ route('pages.show', $recentPage) }}"
@@ -73,25 +80,52 @@
 <div class="mt-6 px-1.5 relative">
     <div class="flex items-center justify-between text-xs text-notion mb-2 px-2">
         <div class="flex items-center">
-            <span>Workspaces</span>
-            <span class="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[10px]">Coming Soon</span>
+            <a href="{{ route('workspaces.index') }}"><span>Workspaces</span></a>
         </div>
-        <span class="text-notion hover:text-gray-800 transition-colors cursor-not-allowed opacity-50">
+        <a href="{{ route('workspaces.create') }}">
+        <span class="text-notion hover:text-gray-800 transition-colors ">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
         </span>
+            </a>
     </div>
     
-    <!-- Default workspace (non-clickable) -->
-    <div class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all bg-gray-100">
-        <span class="page-icon mr-2">👤</span>
-        Personal
-    </div>
+    
     
     <!-- Disabled workspace features info -->
     <div class="mt-2 text-xs text-gray-500 px-2">
-        <p>Multiple workspaces will be available soon. Stay tuned!</p>
+        <!-- Owned Workspaces -->
+        @if(isset($OwnedWorkspaces) && count($OwnedWorkspaces) > 0)
+            <div class="mb-3">
+                <p class="text-xs font-medium text-gray-600 mb-1 px-2">Owned</p>
+                @foreach($OwnedWorkspaces as $workspace)
+                    <a href="{{ route('workspaces.show', $workspace) }}"
+                        class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all truncate">
+                        <span class="page-icon mr-2">{{ $workspace->icon ?? '🗂️' }}</span>
+                        {{ Str::limit($workspace->name, 25) }}
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
+        <!-- Contributed Workspaces -->
+        @if(isset($ContributeWorkspaces) && count($ContributeWorkspaces) > 0)
+            <div>
+                <p class="text-xs font-medium text-gray-600 mb-1 px-2">Shared with me</p>
+                @foreach($ContributeWorkspaces as $workspace)
+                    <a href="{{ route('workspaces.show', $workspace) }}"
+                        class="flex items-center px-2 py-1 text-sm text-notion rounded-md group notion-hover transition-all truncate">
+                        <span class="page-icon mr-2">{{ $workspace->icon ?? '🗂️' }}</span>
+                        {{ Str::limit($workspace->name, 25) }}
+                    </a>
+                @endforeach
+            </div>
+        @endif
+
+        @if((!isset($OwnedWorkspaces) || count($OwnedWorkspaces) == 0) && (!isset($ContributeWorkspaces) || count($ContributeWorkspaces) == 0))
+            <p>No workspaces available yet. Create your first one!</p>
+        @endif</a></div>
     </div>
 </div>
 <!-- Quick Create -->

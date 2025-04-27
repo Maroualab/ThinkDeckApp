@@ -60,7 +60,7 @@ class Page extends Model
      */
     public function children(): HasMany
     {
-        return $this->hasMany(Page::class, 'parent_id')->orderBy('position');
+        return $this->hasMany(Page::class, 'parent_id');
     }
 
     /**
@@ -71,35 +71,6 @@ class Page extends Model
         return $this->belongsTo(Workspace::class);
     }
 
-    /**
-     * Scope a query to only include non-archived pages.
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('is_archived', false);
-    }
-
-    /**
-     * Scope a query to only include root-level pages.
-     */
-    public function scopeRoot($query)
-    {
-        return $query->whereNull('parent_id');
-    }
-
-    /**
-     * Scope a query to only include favorite pages.
-     */
-    public function scopeFavorites($query)
-    {
-        return $query->where('is_favorite', true);
-    }
-
-    /**
-     * Get the route to view the page.
-     */
-    public function getViewRoute()
-    {
-        return route('pages.show', $this);
-    }
+   
+  
 }

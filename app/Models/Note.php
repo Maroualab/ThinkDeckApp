@@ -41,23 +41,7 @@ class Note extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the route to view the note.
-     *
-     * @return string
-     */
-    public function getViewRoute()
-    {
-        return route('notes.show', $this);
-    }
-
-    /**
-     * Get the workspace that owns the note.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function workspace()
-    {
-        return $this->belongsTo(Workspace::class);
-    }
+   
+  
+  
 }

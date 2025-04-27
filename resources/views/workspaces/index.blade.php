@@ -57,9 +57,9 @@
                     <div class="flex items-center">
                         <span class="text-2xl mr-3">{{ $workspace->icon }}</span>
                         <div>
-                            <h3 class="font-medium">{{ $workspace->name }}</h3>
+                           <a href="{{ route('workspaces.show',$workspace) }}"> <h3 class="font-medium">{{ $workspace->name }}</h3></a>
                             <p class="text-sm text-gray-500">
-                                {{ $workspace->pages->count() }} pages, {{ $workspace->notes->count() }} notes
+                                {{ $workspace->pages?->count() }} pages
                                 @if($workspace->is_default) 
                                     <span class="ml-2 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Default</span>
                                 @endif
@@ -73,12 +73,20 @@
                             </svg>
                             Switch
                         </a>
-                        <a href="{{ route('workspaces.edit', $workspace) }}" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm transition-all">Edit</a>
+                        @if ($workspace->owner_id==auth()->user()->id)
+                        <a href="{{ route('workspaces.users', $workspace) }}" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-sm transition-all flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Users
+                        </a>
+                      <a href="{{ route('workspaces.edit', $workspace) }}" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm transition-all">Edit</a>
                         <form action="{{ route('workspaces.destroy', $workspace) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this workspace?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition-all">Delete</button>
                         </form>
+                        @endif
                     </div>
                 </div>
             @empty

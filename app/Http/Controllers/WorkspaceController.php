@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\inviteUserToWorkspace;
+use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Mail;
+use PhpParser\Builder\Use_;
 
 class WorkspaceController extends Controller
 {
@@ -15,8 +19,13 @@ class WorkspaceController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $workspaces = Auth::user()->workspaces()->get();
+    {  
+        
+        // Combine workspaces user owns and is a member of
+        $ownedWorkspaces = auth()->user()->workspaceOwner;
+        $memberWorkspaces = auth()->user()->workspaces;
+        $workspaces = $ownedWorkspaces->concat($memberWorkspaces);
+        // dd($workspaces);
         return view('workspaces.index', compact('workspaces'));
     }
 
@@ -33,26 +42,21 @@ class WorkspaceController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'icon' => 'nullable|string|max:10',
             'description' => 'nullable|string|max:1000',
             'color' => 'nullable|string|max:50',
-            'is_default' => 'boolean',
         ]);
 
-        // If this is the default workspace, unset all other defaults
-        if (!empty($validated['is_default'])) {
-            Auth::user()->workspaces()->where('is_default', true)->update(['is_default' => false]);
-        }
-        
-        // If this is the first workspace, make it default
-        $isFirstWorkspace = Auth::user()->workspaces()->count() === 0;
-        if ($isFirstWorkspace) {
-            $validated['is_default'] = true;
-        }
-        
-        $workspace = Auth::user()->workspaces()->create($validated);
+        $workspace=Workspace::create([
+            'workspace_ref'=>uniqid('#WS-'),
+            'owner_id'=>auth()->user()->id,
+            'name'=>$validated['name'],
+            'icon'=>$validated['icon'],
+            'color'=>$validated['color']
+        ]);
         
         return redirect()->route('workspaces.show', $workspace)
             ->with('success', 'Workspace created successfully');
@@ -63,13 +67,10 @@ class WorkspaceController extends Controller
      */
     public function show(Workspace $workspace)
     {
-        $this->authorize('view', $workspace);
         
         $pages = $workspace->pages()->latest()->paginate(10);
-        
-        $notes = $workspace->notes()->latest()->paginate(10);
-        
-        return view('workspaces.show', compact('workspace', 'pages', 'notes'));
+                
+        return view('workspaces.show', compact('workspace', 'pages'));
     }
 
     /**
@@ -77,7 +78,7 @@ class WorkspaceController extends Controller
      */
     public function edit(Workspace $workspace)
     {
-        $this->authorize('update', $workspace);
+        
         return view('workspaces.edit', compact('workspace'));
     }
 
@@ -86,7 +87,7 @@ class WorkspaceController extends Controller
      */
     public function update(Request $request, Workspace $workspace)
     {
-        $this->authorize('update', $workspace);
+        
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -138,11 +139,53 @@ class WorkspaceController extends Controller
      */
     public function switch(Workspace $workspace)
     {
-        $this->authorize('view', $workspace);
+        
         
         // Store the selected workspace in the session
         session(['active_workspace_id' => $workspace->id]);
         
         return redirect()->back()->with('success', "Switched to {$workspace->name} workspace");
     }
+    public function join(Request $request){
+        $validated=$request->validate([
+            'workspace_ref'=>'required|exists:workspaces,workspace_ref'
+        ]);
+        
+        $workspace=Workspace::where('workspace_ref',$validated['workspace_ref'])->first();
+        
+        
+        
+        // Check if user already owns or is a member of this workspace
+        if ($workspace->owner_id === auth()->id() || $workspace->users->contains(auth()->id())) {
+            return redirect()->back()->with('workspaceError', 'You are already a member of this workspace.');
+        }
+        
+        // Add user to workspace members
+        $workspace->users()->attach(auth()->id());
+        
+        return redirect()->route('workspaces.show', $workspace)
+            ->with('success', 'You have joined the workspace successfully.');
+
+    }
+
+    public function workspacesUsers(Workspace $workspace){
+        return view('workspaces.users',compact('workspace'));
+    }
+
+    public function removeUser(Workspace $workspace,User $user){
+        $workspace->users()->detach($user);
+        return route('workspaces.users',$workspace);
+    }
+
+    public function inviteUser(Workspace $workspace,Request $request){
+        $validated=$request->validate([
+            'email'=>'required|email',
+        ]);
+        // dd($validated['email']);
+        Mail::to($validated['email'])->send(new inviteUserToWorkspace($workspace));
+
+        return redirect()->route('workspaces.users',$workspace)->with(['success_invite'=>'invitation sent successfuly']);
+    }
+
 }
+

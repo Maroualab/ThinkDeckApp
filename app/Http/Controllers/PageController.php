@@ -157,4 +157,14 @@ class PageController extends Controller
 
         return redirect()->route('pages.index')->with('success', 'Page deleted permanently!');
     }
+
+    public function dashboard() {
+        $recentPages = auth()->user()->pages()->orderBy('created_at', 'DESC')->paginate(3);
+        $recentNotes = auth()->user()->notes()->orderBy('created_at', 'DESC')->paginate(3);
+        $OwnedWorkspaces = auth()->user()->workspaceOwner()->orderBy('created_at', 'DESC')->paginate(3);
+        $ContributeWorkspaces = auth()->user()->workspaces;
+       
+// dd($recentPages, $recentNotes, $OwnedWorkspaces, $ContributeWorkspaces) ;
+        return view('dashboard', compact('recentPages', 'recentNotes', 'OwnedWorkspaces', 'ContributeWorkspaces'));
+    }
 }

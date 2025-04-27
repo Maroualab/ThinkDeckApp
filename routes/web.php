@@ -42,9 +42,7 @@ Route::middleware('guest')->group(function () {
 // Authenticated routes (only accessible when logged in)
 Route::middleware('auth')->group(function () {
     // Dashboard route
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard',[PageController::class,'dashboard'])->name('dashboard');
     Route::post('/tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
     Route::post('/tasks/{task}/toggle', [App\Http\Controllers\TaskController::class, 'toggleStatus'])->name('tasks.toggle');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
@@ -77,7 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/documents/import', [DocumentController::class, 'import'])->name('documents.import');
 
     // Workspace routes
-    /*
+    
     Route::get('/workspaces', [WorkspaceController::class, 'index'])->name('workspaces.index');
     Route::get('/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
     Route::post('/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
@@ -86,7 +84,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/workspaces/{workspace}', [WorkspaceController::class, 'update'])->name('workspaces.update');
     Route::delete('/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
     Route::get('/workspaces/switch/{workspace}', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
-*/
+    Route::post('/workspaces/join',[WorkspaceController::class,'join'])->name('workspaces.join');
+    Route::get('/workspaces/Users/{workspace}',[WorkspaceController::class,'workspacesUsers'])->name('workspaces.users');
+    Route::delete('/workspaces/Users/{workspace}/{user}',[WorkspaceController::class,'removeUser'])->name('workspaces.users.remove');
+    Route::post('workspaces/invite/{workspace}',[WorkspaceController::class,'inviteUser'])->name('workspaces.users.invite');
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');

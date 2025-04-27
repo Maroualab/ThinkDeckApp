@@ -60,6 +60,9 @@
                     </svg>
                     Switch to Workspace
                 </a>
+                @if ($workspace->owner_id==auth()->user()->id)
+                
+               
                 <a href="{{ route('workspaces.edit', $workspace) }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -76,6 +79,7 @@
                         Delete
                     </button>
                 </form>
+                @endif
             </div>
         </div>
     </div>
@@ -121,49 +125,6 @@
             @if($pages->hasPages())
                 <div class="px-4 py-3 border-t border-gray-200">
                     {{ $pages->links() }}
-                </div>
-            @endif
-        </div>
-
-        <!-- Notes in this workspace -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div class="p-5 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-lg font-medium flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                    </svg>
-                    Notes
-                </h2>
-                <a href="{{ route('notes.create', ['workspace_id' => $workspace->id]) }}" class="text-sm text-indigo-600 hover:text-indigo-800 transition flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    New Note
-                </a>
-            </div>
-            
-            <div class="divide-y divide-gray-100">
-                @forelse($notes as $note)
-                    <a href="{{ route('notes.show', $note) }}" class="block p-4 hover:bg-gray-50 transition">
-                        <h3 class="text-sm font-medium mb-1 flex items-center">
-                            <span class="page-icon mr-2">{{ $note->icon ?? '📝' }}</span>
-                            {{ Str::limit($note->title, 40) }}
-                        </h3>
-                        <div class="flex justify-between items-center text-xs text-gray-500">
-                            <span>Updated {{ $note->updated_at->diffForHumans() }}</span>
-                        </div>
-                    </a>
-                @empty
-                    <div class="p-4 text-center">
-                        <p class="text-gray-500">No notes in this workspace yet</p>
-                        <a href="{{ route('notes.create', ['workspace_id' => $workspace->id]) }}" class="mt-2 inline-block text-indigo-600 hover:text-indigo-800 text-sm">Create your first note</a>
-                    </div>
-                @endforelse
-            </div>
-            
-            @if($notes->hasPages())
-                <div class="px-4 py-3 border-t border-gray-200">
-                    {{ $notes->links() }}
                 </div>
             @endif
         </div>

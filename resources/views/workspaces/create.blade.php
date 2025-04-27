@@ -3,6 +3,43 @@
 @section('title', 'New Workspace - ThinkDeck')
 
 @section('content')
+<div class="container mx-auto px-4 py-4 mb-6">
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5 shadow-sm">
+        <div class="flex items-center mb-3">
+            <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+            <h2 class="text-lg font-semibold text-gray-800">Join an existing workspace</h2>
+        </div>
+        
+        <form action="{{ route('workspaces.join') }}" method="POST" class="flex flex-wrap md:flex-nowrap items-end gap-3">
+            @csrf
+            <div class="flex-grow w-full">
+                <label for="ref_code" class="block text-sm font-medium text-gray-700 mb-1">Reference Code</label>
+                <div class="relative">
+                    <input type="text" name="workspace_ref" id="ref_code" placeholder="Enter code exemple(#WS-344De...)" 
+                        class="block w-full pl-12 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        title="Only alphanumeric characters allowed"
+                        value="#WS-">
+                </div>
+                @if(session('workspaceError'))
+                    <p class="mt-1 text-sm text-red-600">{{ session('workspaceError') }}</p>
+                @endif
+                @error('workspace_ref')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+            <div class="w-full md:w-auto">
+                <button type="submit" class="w-full md:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center justify-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Join Workspace
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 <div class="container mx-auto px-4 py-8">
     <!-- Breadcrumb -->
     <div class="flex items-center text-sm text-gray-500 mb-6">

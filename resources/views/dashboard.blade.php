@@ -113,7 +113,9 @@
 
 <body class="bg-gray-50 text-gray-900 min-h-screen flex overflow-hidden">
     <!-- Sidebar -->
-    @include('partials.sidebar')
+
+
+    @include('partials.sidebar',['recentPages'=>$recentPages,'recentNotes'=>$recentNotes,'OwnedWorkspaces'=>$OwnedWorkspaces,'ContributeWorkspaces'=>$ContributeWorkspaces])
 
     <div class="flex-1 transition-all duration-300 flex flex-col" id="main-content">
         <!-- Top navigation -->

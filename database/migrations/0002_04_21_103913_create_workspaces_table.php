@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('icon')->default('👤');
             $table->string('color')->nullable();
             $table->timestamps();
+
+            $table->index('workspace_ref');
         });
     }
 
