@@ -11,17 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('auths', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+        Schema::create('user_workspaces', function (Blueprint $table) {
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('workspace_id')->constrained('workspaces');
+            $table->enum('is_allowed',['pending','allowed','rejected'])->default('pending');
+
+    });
+ 
+}
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('auths');
+        //
     }
 };

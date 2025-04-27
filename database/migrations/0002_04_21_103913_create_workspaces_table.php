@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('workspaces', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('workspace_ref')->unique();   
+            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->string('icon')->default('👤');
-            $table->text('description')->nullable();
             $table->string('color')->nullable();
-            $table->boolean('is_default')->default(false);
             $table->timestamps();
         });
     }
