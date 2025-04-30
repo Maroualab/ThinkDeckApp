@@ -22,11 +22,11 @@ class WorkspaceController extends Controller
     {  
         
         // Combine workspaces user owns and is a member of
-        $ownedWorkspaces = auth()->user()->workspaceOwner;
-        $memberWorkspaces = auth()->user()->workspaces;
-        $workspaces = $ownedWorkspaces->concat($memberWorkspaces);
+        $OwnedWorkspaces = auth()->user()->workspaceOwner;
+        $ContributeWorkspaces = auth()->user()->workspaces;
+        $workspaces = $OwnedWorkspaces->concat($ContributeWorkspaces);
         // dd($workspaces);
-        return view('workspaces.index', compact('workspaces'));
+        return view('workspaces.index', compact('workspaces','ContributeWorkspaces','OwnedWorkspaces'));
     }
 
     /**
@@ -147,6 +147,10 @@ class WorkspaceController extends Controller
         return redirect()->back()->with('success', "Switched to {$workspace->name} workspace");
     }
     public function join(Request $request){
+        // If this is a GET request, decode the workspace_ref from the URL
+        if($request->method()==='GET'){
+            $request->merge(['workspace_ref' => urldecode($request->workspace_ref)]);
+        }
         $validated=$request->validate([
             'workspace_ref'=>'required|exists:workspaces,workspace_ref'
         ]);
@@ -174,18 +178,39 @@ class WorkspaceController extends Controller
 
     public function removeUser(Workspace $workspace,User $user){
         $workspace->users()->detach($user);
-        return route('workspaces.users',$workspace);
+        return redirect()->route('workspaces.users',$workspace)->with(['removed'=>"$user->name was removed from the workspace"]);
     }
 
     public function inviteUser(Workspace $workspace,Request $request){
         $validated=$request->validate([
             'email'=>'required|email',
         ]);
-        // dd($validated['email']);
         Mail::to($validated['email'])->send(new inviteUserToWorkspace($workspace));
 
         return redirect()->route('workspaces.users',$workspace)->with(['success_invite'=>'invitation sent successfuly']);
     }
+
+    public function acceptUser(Workspace $workspace , User $user){
+
+    if($workspace->users->contains($user->id)){
+        $workspace->users()->updateExistingPivot($user->id, ['is_allowed' => 'allowed']);
+        
+        return redirect()->back()->with(['approved'=>"$user->name was approved successfully"]);    
+    }
+
+    return redirect()->back()->with(['not_invited'=>"$user->name is not invited"]);    
+
+    }
+
+    public function rejectUser(Workspace $workspace , User $user){
+        if($workspace->users->contains($user->id)){
+            $workspace->users()->updateExistingPivot($user->id, ['is_allowed' => 'rejected']);
+        return redirect()->back()->with(['rejected'=>"$user->name is rejected"]);    
+        }
+        return redirect()->back()->with(['not_invited'=>"$user->name is not invited"]);    
+    
+    }
+
 
 }
 

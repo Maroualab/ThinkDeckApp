@@ -48,7 +48,10 @@ class Workspace extends Model
         return $this->hasMany(Page::class);
     }
 
-    public function users(){
-        return $this->belongsToMany(User::class,'user_workspaces');
-    } 
+   
+public function users()
+{
+    return $this->belongsToMany(User::class, 'user_workspaces')
+                ->withPivot('is_allowed') ;
+}
 }

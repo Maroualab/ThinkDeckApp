@@ -3,45 +3,84 @@
 @section('title', $note->title . ' - ThinkDeck')
 
 @section('topnav-title')
-<div class="flex items-center">
-    <span class="text-xl mr-2">{{ $note->icon ?? '📝' }}</span>
-    <h1 class="text-lg font-medium">{{ $note->title }}</h1>
-</div>
+    {{-- Keep this minimal, maybe just the resource type --}}
+    <h1 class="text-lg font-medium text-gray-700">Note View</h1>
 @endsection
 
 @section('dashboard-content')
-    @include('partials.breadcrumbs', [
-        'resourceType' => 'notes',
-        'current' => $note->title
-    ])
 
-    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-        <div class="prose max-w-none">
-            {{ $note->content }}
+    {{-- Breadcrumbs & Actions Header --}}
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+        {{-- Breadcrumbs Partial --}}
+        @include('partials.breadcrumbs', [
+            'breadcrumbs' => [
+                ['url' => route('notes.index'), 'name' => 'Notes'], // Link back to notes index
+                ['name' => $note->title] // Current note (not linked)
+            ]
+        ])
+
+        {{-- Action Buttons --}}
+        <div class="flex items-center space-x-2 flex-shrink-0">
+            <a href="{{ route('notes.edit', $note) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-md text-sm font-medium transition-all" title="Edit note">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-10 10a2 2 0 01-1.414.586H4a1 1 0 01-1-1v-1a2 2 0 01.586-1.414l10-10z" />
+                </svg>
+                Edit
+            </a>
+            <form action="{{ route('notes.destroy', $note) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this note? This action cannot be undone.');" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent bg-red-50 hover:bg-red-100 text-red-700 rounded-md text-sm font-medium transition-all" title="Delete note">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Delete
+                </button>
+            </form>
         </div>
     </div>
 
-    <div class="mt-8 flex space-x-4">
-        <a href="{{ url()->previous() }}" class="px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-all border border-gray-200">
-            Back
-        </a>
-        <a href="{{ route('notes.edit', $note) }}" class="px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm font-medium transition-all border border-gray-200">
-            Edit Note
-        </a>
+    {{-- Flash Messages Partial (Included via layout now, remove if duplicated) --}}
+    {{-- @include('partials.flash-messages') --}}
 
-        <form action="{{ route('notes.destroy', $note) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this note?');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="px-4 py-2 bg-white hover:bg-red-50 text-red-600 rounded text-sm font-medium transition-all border border-red-200">
-                Delete Note
-            </button>
-        </form>
+    {{-- Note Content Card --}}
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+
+        {{-- Card Header with Icon and Title --}}
+        <div class="p-5 sm:p-6 border-b border-gray-200 bg-gray-50/50">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl flex-shrink-0">{{ $note->icon ?? '📝' }}</span>
+                <h1 class="text-2xl font-semibold text-gray-800 leading-tight truncate">
+                    {{ $note->title }}
+                </h1>
+            </div>
+        </div>
+
+        {{-- Content Area --}}
+        <div class="p-6 sm:p-8">
+            {{-- Apply prose styles for nice HTML rendering --}}
+            {{-- Ensure content is sanitized server-side before storing/displaying --}}
+            <article class="prose prose-indigo lg:prose-lg max-w-none">
+                {!! $note->content !!} {{-- Use {!! !!} to render HTML --}}
+            </article>
+        </div>
+
+        {{-- Card Footer with Metadata --}}
+        <div class="px-6 py-3 bg-gray-50/50 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-end space-x-4">
+            <span class="flex items-center" title="Created Date">
+                 <svg class="w-3 h-3 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                {{ $note->created_at->format('M d, Y') }}
+            </span>
+            @if($note->updated_at->gt($note->created_at->addSeconds(60)))
+                <span class="flex items-center" title="Last Updated">
+                    <svg class="w-3 h-3 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m-15.357-2a8.001 8.001 0 0015.357 2m0 0H15"></path></svg>
+                    {{ $note->updated_at->diffForHumans() }}
+                </span>
+            @endif
+        </div>
     </div>
 
-    <div class="mt-6 text-xs text-gray-500 flex items-center">
-        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        Last updated {{ $note->updated_at->diffForHumans() }}
-    </div>
+    {{-- Removed old action buttons and metadata section --}}
+
 @endsection
+

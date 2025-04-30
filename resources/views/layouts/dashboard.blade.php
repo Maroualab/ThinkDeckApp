@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('additional-styles')
+    @parent 
     <style>
         .notion-sidebar {
             width: 260px;
@@ -33,7 +34,9 @@
             <!-- Main content -->
             <main class="flex-1 overflow-y-auto bg-gray-50  p-4 sm:p-6 lg:p-8">
                 <!-- Include flash messages once, here -->
-                @include('partials.flash-messages')
+                <!-- <div class="mb-4"> 
+        @include('partials.flash-messages')
+    </div> -->
 
                 <!-- Then yield content -->
                 @yield('dashboard-content')

@@ -64,13 +64,12 @@
         @endif
         
         <div style="text-align: center;">
-            <a href="{{ url('/workspace/invitation/accept/'.$workspace->workspace_ref) }}" class="button">Accept Invitation</a>
+            <a href="{{ route('workspaces.join.invite', ['workspace_ref' => urlencode($workspace->workspace_ref)]) }}" class="button">Accept Invitation</a>
         </div>
         
         <p>If the button above doesn't work, copy and paste this link into your browser:</p>
-        <p style="word-break: break-all;">{{ url('/workspace/invitation/accept/'.$workspace->workspace_ref) }}</p>
+        <p style="word-break: break-all;">{{ url('/workspaces/join/invite?workspace_ref='.urlencode($workspace->workspace_ref)) }}</p>
         
-        <p>This invitation will expire in 7 days.</p>
     </div>
     
     <div class="footer">

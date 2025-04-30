@@ -125,9 +125,10 @@ $ContributeWorkspaces = auth()->user()->workspaces;
 
         @if((!isset($OwnedWorkspaces) || count($OwnedWorkspaces) == 0) && (!isset($ContributeWorkspaces) || count($ContributeWorkspaces) == 0))
             <p>No workspaces available yet. Create your first one!</p>
-        @endif</a></div>
-    </div>
-</div>
+        @endif
+    </div> {{-- Closes the "mt-2 text-xs..." div --}}
+</div> {{-- Closes the "mt-6 px-1.5 relative" div --}}
+
 <!-- Quick Create -->
 <div class="mt-6 px-1.5">
     <div class="flex items-center text-xs text-notion mb-2 px-2">

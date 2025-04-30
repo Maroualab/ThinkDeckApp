@@ -1,101 +1,123 @@
-@extends('layouts.app')
+@extends('layouts.dashboard') {{-- Changed layout --}}
 
-@section('content')
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex items-center justify-between mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">Your Profile</h1>
-                <a href="{{ route('dashboard') }}" class="flex items-center text-indigo-600 hover:text-indigo-800">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+@section('title', 'Your Profile - ThinkDeck') {{-- Added title --}}
+
+@section('topnav-title')
+    <h1 class="text-lg font-medium">Your Profile</h1> {{-- Added topnav title --}}
+@endsection
+
+@section('dashboard-content') {{-- Changed section name --}}
+
+    {{-- Breadcrumbs Partial --}}
+    @include('partials.breadcrumbs', [
+        'breadcrumbs' => [
+            ['name' => 'Profile'] // Current page
+        ]
+    ])
+
+    {{-- Flash Messages Partial (Included via layout now) --}}
+    {{-- @include('partials.flash-messages') --}}
+
+    {{-- Profile Card --}}
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-3xl mx-auto"> {{-- Added card styling --}}
+        {{-- Card Header (Optional - Can add if desired) --}}
+        {{-- <div class="p-5 border-b border-gray-200 bg-gray-50/50">
+            <h2 class="text-lg font-medium">Profile Information</h2>
+        </div> --}}
+
+        {{-- Card Body --}}
+        <div class="p-6">
+            <div class="flex items-center mb-6">
+                <div
+                    class="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-xl font-medium text-indigo-600 mr-4">
+                    {{ substr($user->name, 0, 1) }}
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">{{ $user->name }}</h2> {{-- Adjusted font weight --}}
+                    <p class="text-gray-600">{{ $user->email }}</p>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4">
+                <h3 class="text-lg font-medium text-gray-800 mb-3">Account Details</h3> {{-- Adjusted margin --}}
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4"> {{-- Use definition list for semantics --}}
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Name</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->name }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Email Address</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->email }}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Member Since</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->created_at->format('F d, Y') }}</dd>
+                    </div>
+                    {{-- Add other details if needed --}}
+                </dl>
+            </div>
+        </div>
+
+        {{-- Card Footer with Actions --}}
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-wrap items-center justify-start gap-3"> {{-- Changed alignment --}}
+            <a href="{{ route('profile.edit') }}"
+                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors text-sm font-medium"> {{-- Consistent button style --}}
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                    </path>
+                </svg>
+                Edit Profile
+            </a>
+            <form id="delete-account-form" method="POST" action="{{ route('profile.destroy') }}" class="inline"> {{-- Added inline class --}}
+                @csrf
+                @method('DELETE')
+                <button type="button" id="delete-account-button"
+                    class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-red-50 hover:border-red-300 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors text-sm font-medium"> {{-- Consistent button style, added hover effect --}}
+                    <svg class="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"> {{-- Adjusted icon color --}}
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                        </path>
                     </svg>
-                    Back to Dashboard
-                </a>
-            </div>
-
-            <!-- Profile Card -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-                <div class="p-6">
-                    <div class="flex items-center mb-6">
-                        <div
-                            class="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-xl font-medium text-indigo-600 mr-4">
-                            {{ substr($user->name, 0, 1) }}
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-gray-800">{{ $user->name }}</h2>
-                            <p class="text-gray-600">{{ $user->email }}</p>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-gray-200 pt-4">
-                        <h3 class="text-lg font-medium text-gray-800 mb-2">Account Details</h3>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-500">Name</p>
-                                <p class="font-medium">{{ $user->name }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Email</p>
-                                <p class="font-medium">{{ $user->email }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500">Member Since</p>
-                                <p class="font-medium">{{ $user->created_at->format('F d, Y') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex flex-wrap gap-3">
-                    <a href="{{ route('profile.edit') }}"
-                        class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
-                        Edit Profile
-                    </a>
-                    <form id="delete-account-form" method="POST" action="{{ route('profile.destroy') }}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" id="delete-account-button"
-                            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                            <svg class="w-4 h-4 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                </path>
-                            </svg>
-                            Delete Account
-                        </button>
-                    </form>
-             
-                </div>
-            </div>
-
-            @include('partials.flash-messages')
+                    Delete Account
+                </button>
+            </form>
         </div>
     </div>
 
+@endsection
+
+@section('scripts')
+    @parent {{-- Include dashboard scripts --}}
     <!-- Include SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById('delete-account-button').addEventListener('click', function (e) {
-            e.preventDefault();
-            Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-account-form').submit();
-            }
+        // Keep SweetAlert logic
+        const deleteButton = document.getElementById('delete-account-button');
+        if (deleteButton) {
+            deleteButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Deleting your account is permanent and cannot be undone!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#e53e3e", // Red color for confirm
+                    cancelButtonColor: "#718096", // Gray color for cancel
+                    confirmButtonText: "Yes, delete it!",
+                    customClass: { // Optional: Style popup
+                        confirmButton: 'px-4 py-2 rounded',
+                        cancelButton: 'px-4 py-2 rounded'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const deleteForm = document.getElementById('delete-account-form');
+                        if(deleteForm) {
+                            deleteForm.submit();
+                        }
+                    }
+                });
             });
-        });
+        }
     </script>
 @endsection

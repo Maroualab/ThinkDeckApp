@@ -40,7 +40,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated routes (only accessible when logged in)
-Route::middleware('auth')->group(function () {
+
     // Dashboard route
     Route::get('/dashboard',[PageController::class,'dashboard'])->name('dashboard');
     Route::post('/tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
@@ -85,9 +85,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
     Route::get('/workspaces/switch/{workspace}', [WorkspaceController::class, 'switch'])->name('workspaces.switch');
     Route::post('/workspaces/join',[WorkspaceController::class,'join'])->name('workspaces.join');
+    Route::get('/workspaces/join/invite',[WorkspaceController::class,'join'])->name('workspaces.join.invite');
     Route::get('/workspaces/Users/{workspace}',[WorkspaceController::class,'workspacesUsers'])->name('workspaces.users');
     Route::delete('/workspaces/Users/{workspace}/{user}',[WorkspaceController::class,'removeUser'])->name('workspaces.users.remove');
     Route::post('workspaces/invite/{workspace}',[WorkspaceController::class,'inviteUser'])->name('workspaces.users.invite');
+    Route::post('workspaces/Users/accept/{workspace}/{user}',[WorkspaceController::class,'acceptUser'])->name('workspaces.users.accept');
+    Route::post('workspaces/Users/reject/{workspace}/{user}',[WorkspaceController::class,'rejectUser'])->name('workspaces.users.reject');
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -96,7 +99,7 @@ Route::middleware('auth')->group(function () {
 
     // Logout route
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
+
 
 
 // Admin routes (only accessible by admins)

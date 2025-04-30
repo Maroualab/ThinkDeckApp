@@ -1,142 +1,82 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit ' . $note->title . ' - ThinkDeck')
+@section('title', 'Edit Note - ThinkDeck') {{-- Simplified title --}}
 
 @section('topnav-title')
-<h1 class="text-lg font-medium">Edit Note</h1>
+    <h1 class="text-lg font-medium">Edit Note</h1>
+@endsection
+
+{{-- No additional styles needed --}}
+@section('additional-styles')
+    @parent
 @endsection
 
 @section('dashboard-content')
+
+    {{-- Breadcrumbs Partial --}}
     @include('partials.breadcrumbs', [
-        'resourceType' => 'notes',
-        'current' => 'Edit "' . $note->title . '"'
+        'breadcrumbs' => [
+            ['url' => route('notes.index'), 'name' => 'Notes'], // Link back to notes index
+            ['url' => route('notes.show', $note), 'name' => $note->title ?? 'Untitled Note'], // Link back to show view
+            ['name' => 'Edit'] // Current action
+        ]
     ])
-    
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <form action="{{ route('notes.update', $note) }}" method="POST">
-            @csrf
-            @method('PUT')
 
-            <div class="mb-6">
-                <div class="flex items-center">
-                    <div class="mr-2">
-                        <button type="button" id="iconSelector" class="text-2xl border border-gray-200 rounded p-1 hover:bg-gray-50">
-                            {{ $note->icon ?? '📝' }}
-                        </button>
-                        <input type="hidden" name="icon" id="selectedIcon" value="{{ $note->icon ?? '📝' }}">
-                    </div>
-                    <div class="flex-1">
-                        <input type="text" name="title" id="title" placeholder="Note title" 
-                               class="w-full border-0 border-b border-transparent text-2xl font-bold focus:ring-0 focus:border-gray-300" 
-                               value="{{ old('title', $note->title) }}" required autofocus>
-                    </div>
-                </div>
-            </div>
+    {{-- Flash Messages Partial - Placed subtly at the top --}}
+    <!-- <div class="mb-4">
+        @include('partials.flash-messages')
+    </div> -->
 
-            <div class="mb-6">
-                <label for="content" class="block text-sm font-medium text-gray-700 mb-1 sr-only">Content</label>
-                <textarea name="content" id="content" rows="12" 
-                    class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4"
-                    placeholder="Start writing...">{{ old('content', $note->content) }}</textarea>
-            </div>
+    {{-- Ultra-Minimalist Form - No Card Wrapper --}}
+    <form action="{{ route('notes.update', $note) }}" method="POST" class="space-y-4 max-w-3xl">
+        @csrf
+        @method('PUT')
 
-            <div class="flex justify-end space-x-2">
-                <a href="{{ route('notes.show', $note) }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm font-medium transition-all">
-                    Cancel
-                </a>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium transition-all">
-                    Save Changes
-                </button>
-            </div>
-        </form>
-    </div>
+        {{-- Hidden Icon Input (Keep existing icon, not editable here) --}}
+        <input type="hidden" name="icon" value="{{ $note->icon ?? '📝' }}">
+
+        {{-- Content Textarea - Primary Focus --}}
+        <div>
+            <label for="content" class="sr-only">Note Content</label>
+            <textarea name="content" id="content" rows="15"
+                class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 text-base placeholder-gray-400"
+                placeholder="Start writing your note..." required autofocus>{{ old('content', $note->content) }}</textarea> {{-- Autofocus here --}}
+            @error('content')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Title Input - Secondary, smaller --}}
+        <div>
+            <label for="title" class="sr-only">Title</label>
+            <input type="text" name="title" id="title" placeholder="Add a title (optional)..."
+                   class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500 py-1.5 px-3"
+                   value="{{ old('title', $note->title) }}"> {{-- Pre-fill title --}}
+            @error('title')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+         {{-- Workspace Selection (Optional - Kept commented) --}}
+         {{-- @if(isset($workspaces) && $workspaces->count() > 0) ... @endif --}}
+
+        {{-- Form Actions - Simplified --}}
+        <div class="pt-2 flex justify-end space-x-3">
+            <a href="{{ route('notes.show', $note) }}" {{-- Link back to show view --}}
+               class="px-3 py-1.5 border border-gray-300 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="px-3 py-1.5 border border-transparent rounded-md shadow-sm text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Save Changes
+            </button>
+        </div>
+    </form>
+
 @endsection
 
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const iconSelector = document.getElementById('iconSelector');
-        const selectedIcon = document.getElementById('selectedIcon');
-        
-        // Common note icons
-        const icons = ['📝', '📓', '📔', '📕', '📖', '📗', '📘', '📙', '📚', '📒', '🗒️', '🔖', '📑', '🗞️', '📰', '🏷️', '✏️', '✒️', '🖋️', '📌', '📍', '📎', '🖇️', '📐', '📏', '✂️', '💼', '💡', '🔍', '🔎', '🔦', '🧮', '🧾', '📬', '📭', '📮', '🗿', '🔔', '🔕', '📢', '📣', '🔊', '🔉', '🔇', '🔈', '📯', '🔄', '♻️', '🔃', '🕓', '⏱️', '⏲️', '⏰', '🕰️', '🗓️', '📅', '📆', '⌚', '📱', '💻', '⌨️', '💾', '📧', '📧', '📨', '📩', '📤', '📥', '📦', '🤔', '🧐', '🤦', '🤷', '🙋', '💭', '💬', '🗯️', '❓', '❔', '❗', '❕', '❣️', '💯', '💢', '🔥', '⭐', '🌟', '✨', '💫', '🚩', '🎯', '💘', '💝', '💖', '💗', '💓', '💞', '💕', '❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍'];
-        
-        // Create the icon picker popup
-        const popup = document.createElement('div');
-        popup.className = 'fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 hidden';
-        popup.id = 'iconPickerPopup';
-        
-        const popupContent = document.createElement('div');
-        popupContent.className = 'bg-white rounded-lg shadow-lg w-full max-w-lg p-6';
-        
-        const popupHeader = document.createElement('div');
-        popupHeader.className = 'flex justify-between items-center mb-4';
-        popupHeader.innerHTML = `
-            <h3 class="text-lg font-medium">Select an Icon</h3>
-            <button id="closeIconPicker" class="text-gray-500 hover:text-gray-700">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        `;
-        
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.placeholder = 'Search icons...';
-        searchInput.className = 'w-full px-3 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
-        
-        const iconGrid = document.createElement('div');
-        iconGrid.className = 'grid grid-cols-8 gap-2 overflow-y-auto max-h-64';
-        
-        icons.forEach(icon => {
-            const iconButton = document.createElement('button');
-            iconButton.type = 'button';
-            iconButton.className = 'text-2xl p-2 hover:bg-gray-100 rounded';
-            iconButton.textContent = icon;
-            iconButton.addEventListener('click', () => {
-                selectedIcon.value = icon;
-                iconSelector.textContent = icon;
-                popup.classList.add('hidden');
-            });
-            iconGrid.appendChild(iconButton);
-        });
-        
-        popupContent.appendChild(popupHeader);
-        popupContent.appendChild(searchInput);
-        popupContent.appendChild(iconGrid);
-        popup.appendChild(popupContent);
-        document.body.appendChild(popup);
-        
-        // Icon selector click event
-        iconSelector.addEventListener('click', function() {
-            popup.classList.remove('hidden');
-        });
-        
-        // Close button click event
-        document.getElementById('closeIconPicker').addEventListener('click', function() {
-            popup.classList.add('hidden');
-        });
-        
-        // Close when clicking outside
-        popup.addEventListener('click', function(e) {
-            if (e.target === popup) {
-                popup.classList.add('hidden');
-            }
-        });
-        
-        // Search functionality
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const iconButtons = iconGrid.querySelectorAll('button');
-            
-            iconButtons.forEach(button => {
-                if (button.textContent.includes(query)) {
-                    button.style.display = '';
-                } else {
-                    button.style.display = 'none';
-                }
-            });
-        });
-    });
-</script>
-@endpush
+{{-- Remove Icon Picker JS --}}
+@section('scripts')
+    @parent {{-- Include parent layout's scripts --}}
+    {{-- No specific scripts needed for this simple note form --}}
+@endsection

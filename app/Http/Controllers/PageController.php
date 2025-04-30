@@ -17,19 +17,21 @@ class PageController extends Controller
      */
     public function index()
     {
-        // Without workspaces, we'll simply show all user's pages
+        $perPage = 15;
+
+        // Paginate the main pages list
         $pages = Auth::user()->pages()
                     ->where('is_favorite', false)
                     ->where('is_archived', false)
                     ->latest()
-                    ->get();
-                    
+                    ->paginate($perPage); 
+
         $favorites = Auth::user()->pages()
                     ->where('is_favorite', true)
                     ->where('is_archived', false)
                     ->latest()
-                    ->get();
-        
+                    ->get(); 
+
         return view('pages.index', compact('pages', 'favorites'));
     }
 
