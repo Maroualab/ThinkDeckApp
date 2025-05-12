@@ -26,6 +26,7 @@ class Page extends Model
         'is_favorite',
         'is_template',
         'is_archived',
+        'workspace_id',
     ];
 
     /**

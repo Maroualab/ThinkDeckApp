@@ -1,5 +1,5 @@
 <?php
-$recentPages = auth()->user()->pages()->orderBy('created_at', 'DESC')->paginate(3);
+$recentPages = auth()->user()->pages()->where('workspace_id',null)->orderBy('created_at', 'DESC')->paginate(3);
 $recentNotes = auth()->user()->notes()->orderBy('created_at', 'DESC')->paginate(3);
 $OwnedWorkspaces = auth()->user()->workspaceOwner()->orderBy('created_at', 'DESC')->paginate(3);
 $ContributeWorkspaces = auth()->user()->workspaces;

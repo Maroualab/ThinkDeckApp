@@ -20,7 +20,7 @@
     <!-- Search and Filters -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
         <div class="p-5">
-            <form action="#" method="GET" class="space-y-4">
+            <form action="" method="GET" class="space-y-4">
                 <div class="flex flex-col md:flex-row md:space-x-4">
                     <div class="w-full md:w-1/3 mb-4 md:mb-0">
                         <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
@@ -30,8 +30,8 @@
                         <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
                         <select name="role" id="role" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">All Roles</option>
-                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                            <option value="1" {{ request('role') == '1' ? 'selected' : '' }}>Admin</option>
+                            <option value="0" {{ request('role') == '0' ? 'selected' : '' }}>User</option>
                         </select>
                     </div>
                     <div class="w-full md:w-1/3">
@@ -109,12 +109,24 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    <button type="button" 
-                                        onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this user?')) { document.getElementById('delete-form-{{ $user->id }}').submit(); }" 
+                                    <!-- Switch Role Button -->
+                                    <button type="button"
+                                        onclick="event.preventDefault(); if(confirm('Are you sure you want to change this user\'s role to \'{{ $user->is_admin ? 'User' : 'Admin' }}\'?')) { document.getElementById('toggle-role-form-{{ $user->id }}').submit(); }"
+                                        class="{{ $user->is_admin ? 'text-yellow-600 hover:text-yellow-900' : 'text-blue-600 hover:text-blue-900' }}">
+                                        {{ $user->is_admin ? 'Make User' : 'Make Admin' }}
+                                    </button>
+                                    <form id="toggle-role-form-{{ $user->id }}" action="{{ route('admin.updateRole',[$user]) }}"  method="POST" class="hidden">
+                                        @csrf
+                                        @method('PATCH')
+                                    </form>
+
+                                    <!-- Delete Button -->
+                                    <button type="button"
+                                        onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this user?')) { document.getElementById('delete-form-{{ $user->id }}').submit(); }"
                                         class="text-red-600 hover:text-red-900">
                                         Delete
                                     </button>
-                                    <form id="delete-form-{{ $user->id }}" action="#" method="POST" class="hidden">
+                                    <form id="delete-form-{{ $user->id }}" action="#" {{-- Replace # with your actual route for deleting user --}} method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
                                     </form>

@@ -14,23 +14,16 @@
 
 @section('dashboard-content')
 
-    {{-- Removed Breadcrumbs --}}
-    {{-- Removed Page Header --}}
+ 
 
-    {{-- Flash Messages Partial - Placed subtly at the top --}}
-    
-
-    {{-- Ultra-Minimalist Form --}}
     <form action="{{ route('notes.store') }}" method="POST" class="space-y-4 max-w-3xl"> {{-- Reduced vertical spacing --}}
         @csrf
-        {{-- Hidden Icon Input (Defaulting to Note Emoji) --}}
         <input type="hidden" name="icon" value="📝">
 
-        {{-- Content Textarea - Primary Focus --}}
         <div>
             <label for="content" class="sr-only">Note Content</label>
             <textarea name="content" id="content" rows="15" {{-- Generous rows --}}
-                class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 text-base placeholder-gray-400" {{-- Slightly lighter placeholder --}}
+                class="w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-4 text-base placeholder-gray-400 mt-8" {{-- Slightly lighter placeholder --}}
                 placeholder="Start writing your note..." required autofocus>{{ old('content') }}</textarea> {{-- Autofocus here --}}
             @error('content')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

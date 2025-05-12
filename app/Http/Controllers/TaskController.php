@@ -49,12 +49,10 @@ class TaskController extends Controller
  
     public function destroy(Task $task)
     {
-        // Ensure the authenticated user owns the task
         if ($task->user_id !== auth()->id()) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        // Delete the task
         $task->delete();
 
         return response()->json(['success' => true, 'message' => 'Task deleted successfully']);

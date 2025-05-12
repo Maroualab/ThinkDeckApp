@@ -50,6 +50,7 @@
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden max-w-4xl mx-auto">
         <form action="{{ route('pages.store') }}" method="POST">
             @csrf
+            <input type="hidden" value='{{ request('workspace_id')?? null }}' name="workspace_id">
             <div class="p-6 space-y-6">
 
                 {{-- Icon Picker & Title Row --}}
@@ -115,33 +116,6 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
-
-
-                @if(isset($workspaces) && $workspaces->count() > 0)
-                    <div>
-                        <label for="workspace_id" class="block text-sm font-medium text-gray-700 mb-1">Add to Workspace</label>
-                        <select name="workspace_id" id="workspace_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="">None (Personal Page)</option> {{-- Clearer default option --}}
-
-
-                            @foreach($workspaces as $ws)
-                                <option value="{{ $ws->id }}" {{ old('workspace_id', request('workspace_id')) == $ws->id ? 'selected' : '' }}>
-                                    {{ $ws->icon }} {{ $ws->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('workspace_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-                @else
-
-
-                    <input type="hidden" name="workspace_id" value="">
-                @endif
-
-            </div>
 
             {{-- Form Actions --}}
 

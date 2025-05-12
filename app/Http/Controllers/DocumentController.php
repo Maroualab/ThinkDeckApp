@@ -23,18 +23,14 @@ class DocumentController extends Controller
         $extension = $file->getClientOriginalExtension();
         $fileName = pathinfo($originalName, PATHINFO_FILENAME);
         
-        // Store the file
         $path = $file->store('imports', 'public');
         $fullPath = Storage::disk('public')->path($path);
         
-        // Extract content based on file type
         $content = '';
         
         if (in_array($extension, ['txt', 'md'])) {
-            // For text files
             $content = Storage::disk('public')->get($path);
         } elseif (in_array($extension, ['doc', 'docx'])) {
-            // For Word documents using phpoffice/phpword
             $phpWord = \PhpOffice\PhpWord\IOFactory::load($fullPath);
             $sections = $phpWord->getSections();
             $text = [];
@@ -55,20 +51,17 @@ class DocumentController extends Controller
             
             $content = implode("\n", $text);
         } elseif ($extension === 'pdf') {
-            // For PDF files using smalot/pdfparser
             $parser = new \Smalot\PdfParser\Parser();
             $pdf = $parser->parseFile($fullPath);
             $content = $pdf->getText();
         }
 
-        // Create a new page with the file content
         $page = Auth::user()->pages()->create([
             'title' => $fileName,
             'content' => $content,
             'icon' => $this->getIconForFileType($extension),
         ]);
 
-        // Return to the newly created page
         return redirect()->route('pages.show', $page)->with('success', "File '{$originalName}' successfully imported!");
     }
 

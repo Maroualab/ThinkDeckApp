@@ -46,21 +46,22 @@
         </div>
         <div class="p-5">
             {{-- Adjusted form layout for better responsiveness --}}
-            <form action="{{ route('workspaces.users.invite',$workspace) }}" method="POST" class="flex flex-wrap md:flex-nowrap items-end gap-3">
+            <form action="{{ route('workspaces.users.invite',$workspace) }}" method="POST" class="space-y-4 md:space-y-0 md:grid md:grid-cols-[1fr_auto] md:gap-3 md:items-end">
                 @csrf
-                <div class="flex-grow w-full">
+                <div> {{-- Email field group --}}
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                     <input type="email" name="email" id="email" placeholder="user@example.com" required
-                        value="{{ old('email') }}" {{-- Added old() helper --}}
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm">
-                    @error('email') {{-- Added specific error display --}}
+                        value="{{ old('email') }}"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    @error('email')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="w-full md:w-auto flex-shrink-0"> {{-- Added flex-shrink-0 --}}
-                    <button type="submit" class="w-full md:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all flex items-center justify-center">
+
+                <div> {{-- Button group --}}
+                    <button type="submit" class="w-full md:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all flex items-center justify-center">
                          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path> {{-- Changed Icon --}}
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"></path>
                         </svg>
                         Send Invitation
                     </button>
@@ -80,8 +81,8 @@
             </h2>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+        <div class="overflow-x-auto ">
+            <table class="min-w-full divide-y divide-gray-200 w-full">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
@@ -118,9 +119,9 @@
                             {{-- Status --}}
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 {{-- Improved status badges --}}
-                                @if($user->pivot->is_allowed === 'accepted')
+                                @if($user->pivot->is_allowed === 'allowed')
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Accepted
+                                        Allowed
                                     </span>
                                 @elseif($user->pivot->is_allowed === 'pending')
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -140,10 +141,10 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center space-x-2">
                                 {{-- Refined action button logic --}}
                                 {{-- Accept Button (Show if pending or rejected AND current user is owner) --}}
-                                @if ($user->pivot->is_allowed !== 'accepted' && $workspace->owner_id === auth()->id())
+                                @if ($user->pivot->is_allowed !== 'allowed' && $workspace->owner_id === auth()->id())
                                     <form action="{{ route('workspaces.users.accept', [$workspace, $user]) }}" method="POST" class="inline-block">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-all text-xs" title="Accept User">
+                                        <button type="submit" title="Accept User" style="padding: 0.25rem 0.75rem; background-color: #16a34a; color: #ffffff; border-radius: 0.25rem; font-size: 0.75rem; line-height: 1rem; border: none; cursor: pointer;">
                                             Accept
                                         </button>
                                     </form>
@@ -153,26 +154,29 @@
                                 @if ($user->pivot->is_allowed === 'pending' && $workspace->owner_id === auth()->id())
                                     <form action="{{ route('workspaces.users.reject', [$workspace, $user]) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to reject this user?');">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-all text-xs" title="Reject User">
+                                        <button type="submit" title="Reject User" style="padding: 0.25rem 0.75rem; background-color: #dc2626; color: #ffffff; border-radius: 0.25rem; font-size: 0.75rem; line-height: 1rem; border: none; cursor: pointer;">
                                             Reject
                                         </button>
                                     </form>
                                 @endif
 
-                                {{-- Remove Button (Show if accepted, not owner, AND current user is owner) --}}
-                                @if ($user->pivot->is_allowed === 'accepted' && $user->id !== $workspace->owner_id && $workspace->owner_id === auth()->id())
+                                {{-- Remove Button (Show if allowed, not owner, AND current user is owner) --}}
+                                @if ($user->pivot->is_allowed === 'allowed' && $user->id !== $workspace->owner_id && $workspace->owner_id === auth()->id())
                                     <form action="{{ route('workspaces.users.remove', [$workspace, $user]) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to remove this user from the workspace?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="px-3 py-1 bg-gray-100 text-red-600 hover:bg-gray-200 rounded transition-all text-xs" title="Remove User">
+                                        <button type="submit" title="Remove User" style="padding: 0.25rem 0.75rem; background-color: #f3f4f6; color: #dc2626; border-radius: 0.25rem; font-size: 0.75rem; line-height: 1rem; border: none; cursor: pointer;">
                                             Remove
                                         </button>
                                     </form>
                                 @endif
 
-                                {{-- Show placeholder if user is owner or no actions available --}}
-                                @if ($user->id === $workspace->owner_id || ($workspace->owner_id !== auth()->id() && $user->pivot->is_allowed !== 'pending'))
-                                    <span class="text-xs text-gray-400">-</span>
+                                {{-- Show placeholder if user is owner or current user is not the owner --}}
+                                @if ($user->id === $workspace->owner_id || $workspace->owner_id !== auth()->id())
+                                    {{-- Only show placeholder if no other buttons were rendered for the owner viewing a non-owner user --}}
+                                    @if (!($workspace->owner_id === auth()->id() && $user->id !== $workspace->owner_id && ($user->pivot->is_allowed === 'pending' || $user->pivot->is_allowed === 'rejected' || $user->pivot->is_allowed === 'allowed')))
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
                                 @endif
                             </td>
                         </tr>
@@ -198,4 +202,4 @@
         --}}
     </div>
 
-@endsection 
+@endsection

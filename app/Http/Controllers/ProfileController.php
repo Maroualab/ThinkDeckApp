@@ -31,7 +31,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = auth()->user(); 
-        return view('profile.edit', compact('user')); // Pass the user to the view
+        return view('profile.edit', compact('user')); 
     }
 
     /**
@@ -59,7 +59,6 @@ class ProfileController extends Controller
             ],
         ]);
 
-        // Hash the password if it is provided
         if (!empty($validatedData['password'])) {
             $validatedData['password'] = bcrypt($validatedData['password']);
         } else {

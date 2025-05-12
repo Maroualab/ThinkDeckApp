@@ -8,7 +8,7 @@
 
 
     {{-- Page Header --}}
-    <div class="flex justify-between items-center mb-6 mt-7">
+    <div class="flex justify-between items-center mb-6 mt-8">
         <h1 class="text-2xl font-semibold text-gray-900">Workspaces</h1>
         <a href="{{ route('workspaces.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-all flex items-center text-sm font-medium">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,21 +54,7 @@
                     {{-- Workspace Actions --}}
                     <div class="flex space-x-2">
                         {{-- Switch Workspace --}}
-                        @if(session('active_workspace_id') != $workspace->id)
-                            <a href="{{ route('workspaces.switch', $workspace) }}" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded text-sm transition-all flex items-center text-gray-700" title="Switch to this workspace">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l"></path>
-                                </svg>
-                                Switch
-                            </a>
-                        @else
-                            <span class="px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded text-sm flex items-center font-medium" title="Current active workspace">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                                Active
-                            </span>
-                        @endif
+                       
 
                         {{-- Owner Actions --}}
                         @if ($workspace->owner_id == auth()->user()->id)

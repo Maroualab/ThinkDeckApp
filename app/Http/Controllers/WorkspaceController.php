@@ -21,7 +21,6 @@ class WorkspaceController extends Controller
     public function index()
     {  
         
-        // Combine workspaces user owns and is a member of
         $OwnedWorkspaces = auth()->user()->workspaceOwner;
         $ContributeWorkspaces = auth()->user()->workspaces;
         $workspaces = $OwnedWorkspaces->concat($ContributeWorkspaces);
@@ -69,6 +68,8 @@ class WorkspaceController extends Controller
     {
         
         $pages = $workspace->pages()->latest()->paginate(10);
+        // dd($pages);
+    
                 
         return view('workspaces.show', compact('workspace', 'pages'));
     }
@@ -97,7 +98,6 @@ class WorkspaceController extends Controller
             'is_default' => 'boolean',
         ]);
 
-        // If making this workspace the default, unset all other defaults
         if (!empty($validated['is_default']) && !$workspace->is_default) {
             Auth::user()->workspaces()->where('is_default', true)->update(['is_default' => false]);
         }
@@ -115,13 +115,11 @@ class WorkspaceController extends Controller
     {
         $this->authorize('delete', $workspace);
         
-        // Check if it's the only workspace or the default workspace
         if (Auth::user()->workspaces()->count() === 1) {
             return back()->with('error', 'Cannot delete the only workspace.');
         }
         
         if ($workspace->is_default) {
-            // Find another workspace to make default
             $newDefault = Auth::user()->workspaces()->where('id', '!=', $workspace->id)->first();
             $newDefault->update(['is_default' => true]);
         }
@@ -137,15 +135,15 @@ class WorkspaceController extends Controller
     /**
      * Switch the active workspace.
      */
-    public function switch(Workspace $workspace)
-    {
+    // public function switch(Workspace $workspace)
+    // {
         
         
-        // Store the selected workspace in the session
-        session(['active_workspace_id' => $workspace->id]);
+    //     // Store the selected workspace in the session
+    //     session(['active_workspace_id' => $workspace->id]);
         
-        return redirect()->back()->with('success', "Switched to {$workspace->name} workspace");
-    }
+    //     return redirect()->back()->with('success', "Switched to {$workspace->name} workspace");
+    // }
     public function join(Request $request){
         // If this is a GET request, decode the workspace_ref from the URL
         if($request->method()==='GET'){
@@ -159,12 +157,10 @@ class WorkspaceController extends Controller
         
         
         
-        // Check if user already owns or is a member of this workspace
         if ($workspace->owner_id === auth()->id() || $workspace->users->contains(auth()->id())) {
             return redirect()->back()->with('workspaceError', 'You are already a member of this workspace.');
         }
         
-        // Add user to workspace members
         $workspace->users()->attach(auth()->id());
         
         return redirect()->route('workspaces.show', $workspace)

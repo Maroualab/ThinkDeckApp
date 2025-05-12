@@ -8,10 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     */
-  
+   
     /**
      * Display a listing of the pages.
      */
@@ -19,10 +16,8 @@ class PageController extends Controller
     {
         $perPage = 15;
 
-        // Paginate the main pages list
         $pages = Auth::user()->pages()
-                    ->where('is_favorite', false)
-                    ->where('is_archived', false)
+                    ->where('workspace_id', null)
                     ->latest()
                     ->paginate($perPage); 
 
@@ -51,14 +46,16 @@ class PageController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
-            'icon' => 'required|string',
+            'icon' => 'required|string|max:10',
+            'workspace_id'=> 'nullable|exists:workspaces,id'
         ]);
 
-        $page = Auth::user()->pages()->create([
-            'title' => $validated['title'],
-            'content' => $validated['content'] ?? '',
-            'icon' => $validated['icon'],
-            // No workspace_id assigned
+        $page = Page::create([
+            'user_id'=>auth()->user()->id,
+            'workspace_id'=>$validated['workspace_id'],
+            'title'=>$validated['title'],
+            'content'=>$validated['content'],
+            'icon'=>$validated['icon'],
         ]);
 
         return redirect()->route('pages.show', $page)
@@ -166,7 +163,6 @@ class PageController extends Controller
         $OwnedWorkspaces = auth()->user()->workspaceOwner()->orderBy('created_at', 'DESC')->paginate(3);
         $ContributeWorkspaces = auth()->user()->workspaces;
        
-// dd($recentPages, $recentNotes, $OwnedWorkspaces, $ContributeWorkspaces) ;
         return view('dashboard', compact('recentPages', 'recentNotes', 'OwnedWorkspaces', 'ContributeWorkspaces'));
     }
 }

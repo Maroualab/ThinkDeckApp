@@ -35,11 +35,9 @@ class NoteController extends Controller
      */
     public function create(Request $request)
     {
-        // Get workspace_id from request if provided
         $workspaceId = $request->workspace_id;
         $workspace = null;
         
-        // If workspace_id is provided, validate it belongs to the user
         if ($workspaceId) {
             $workspace = Auth::user()->workspaces()->find($workspaceId);
         }
@@ -62,7 +60,6 @@ class NoteController extends Controller
             'title' => $validated['title'],
             'content' => $validated['content'] ?? '',
             'icon' => $validated['icon'],
-            // No workspace_id assigned
         ]);
 
         return redirect()->route('notes.show', $note)
@@ -74,7 +71,6 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        // Check if the note belongs to the authenticated user
         if ($note->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -87,7 +83,6 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        // Check if the note belongs to the authenticated user
         if ($note->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -100,7 +95,6 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
-        // Check if the note belongs to the authenticated user
         if ($note->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -109,22 +103,15 @@ class NoteController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'icon' => 'nullable|string|max:10',
-            // 'workspace_id' => 'nullable|exists:workspaces,id',
         ]);
 
-        // If no workspace_id is specified, use the active workspace from session
-        // if (!isset($validated['workspace_id']) && session('active_workspace_id')) {
-        //     $validated['workspace_id'] = session('active_workspace_id');
-        // }
-
+     
         $note->update([
             'title' => $validated['title'],
             'content' => $validated['content'] ?? null,
             'icon' => $validated['icon'] ?? $note->icon,
-            // 'workspace_id' => $validated['workspace_id'],
         ]);
 
-        // Use flash only once
         return redirect()->route('notes.show', $note)->with('success', 'Note updated successfully!');
     }
 
@@ -133,14 +120,12 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
-        // Check if the note belongs to the authenticated user
         if ($note->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
         $note->delete();
 
-        // Use flash only once
         return redirect()->route('notes.index')->with('success', 'Note deleted successfully!');
     }
 }

@@ -1,4 +1,4 @@
-<div class="flex items-center text-sm text-gray-500 mb-4 overflow-x-auto pt-[30px]">
+<div class="flex items-center text-sm text-gray-500 mb-4 overflow-x-auto pt-[30px] pt-6">
     <a href="{{ route('dashboard') }}" class="hover:text-gray-700">Dashboard</a>
 
     {{-- This part can stay if needed for index pages --}}

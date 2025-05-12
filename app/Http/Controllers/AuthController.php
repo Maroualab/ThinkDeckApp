@@ -24,20 +24,16 @@ class AuthController extends Controller
      */
     public function register(StoreAuthRequest $request)
     {
-        // Get validated data
         $validated = $request->validated();
         
-        // Create the user
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
         
-        // Log the user in
         Auth::login($user);
         
-        // Redirect to dashboard
         return redirect()->route('dashboard');
     }
 
@@ -54,18 +50,15 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate login credentials
         $credentials = $request->only('email', 'password');
         $remember = $request->has('remember');
 
-        // Attempt to log in
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             return redirect()->intended('/dashboard');
         }
 
-        // Authentication failed
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
